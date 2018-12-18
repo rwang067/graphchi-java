@@ -79,14 +79,16 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
         companion.outputDistributions(baseFilename + "_ppr_" + firstSource + "_"
                 + (firstSource + numSources - 1) + ".top" + nTop, nTop);
 
-        /* For debug */
-        VertexIdTranslate vertexIdTranslate = this.drunkardMobEngine.getVertexIdTranslate();
-        IdCount[] topForFirst = companion.getTop(firstSource, 10);
+        // /* For debug */
+        // VertexIdTranslate vertexIdTranslate = this.drunkardMobEngine.getVertexIdTranslate();
+        // for(int i=0; i < numSources; i++) {
+        //     IdCount[] topForFirst = companion.getTop(firstSource+i, 10);
 
-        System.out.println("Top visits from source vertex " + vertexIdTranslate.forward(firstSource) + " (internal id=" + firstSource + ")");
-        for(IdCount idc : topForFirst) {
-            System.out.println(vertexIdTranslate.backward(idc.id) + ": " + idc.count);
-        }
+        //     System.out.println("Top visits from source vertex " + vertexIdTranslate.forward(firstSource+i) + " (internal id=" + firstSource+i + ")");
+        //     for(IdCount idc : topForFirst) {
+        //         System.out.println(vertexIdTranslate.backward(idc.id) + ": " + idc.count);
+        //     }
+        // }
 
         /* If local, shutdown the companion */
         if (companion instanceof DrunkardCompanion) {
@@ -114,7 +116,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
 
                 // Reset?
                 if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
-                    drunkardContext.resetWalk(walk, false);
+                    ;//drunkardContext.resetWalk(walk, false);
                 } else {
                     int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
 
@@ -128,7 +130,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
         } else {
             // Reset all walks -- no where to go from here
             for(int i=0; i < numWalks; i++) {
-                drunkardContext.resetWalk(walks[i], false);
+                ;//drunkardContext.resetWalk(walks[i], false);
             }
         }
     }
@@ -201,7 +203,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
             PersonalizedPageRank pp = new PersonalizedPageRank(companionUrl, baseFilename, nShards,
                     firstSource, numSources, walksPerSource);
             pp.execute(nIters);
-
+            System.exit(0);
         } catch (Exception err) {
             err.printStackTrace();
             // automatically generate the help statement

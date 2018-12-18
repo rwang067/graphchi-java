@@ -275,6 +275,7 @@ public abstract class DrunkardCompanion extends UnicastRemoteObject implements R
     @Override
     public IdCount[] getTop(int vertexId, int nTop) throws RemoteException {
         int sourceIdx = (sourceVertexIds == null ? -1 : Arrays.binarySearch(sourceVertexIds, vertexId));
+        System.out.println("get top at source vertex " + sourceIdx);
         if (sourceIdx >= 0) {
             int[] arr = buffers[sourceIdx].toIntArray();
             drainBuffer(sourceIdx);
@@ -341,6 +342,7 @@ public abstract class DrunkardCompanion extends UnicastRemoteObject implements R
                     dos.writeInt(vc.id);
                     dos.writeInt(vc.count);
                     written++;
+                    // logger.info("vc.id , vc.count : " + vc.id + " , " + vc.count);
                 }
                 while(written < nTop) {
                     written++;
