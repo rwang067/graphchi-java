@@ -697,14 +697,14 @@ public class FastSharder <VertexValueType, EdgeValueType> {
                         if (format == GraphInputFormat.EDGELIST) {
                         /* Edge list: <src> <dst> <value> */
                             if (tok.length == 2) {
-                                this.addEdge(Integer.parseInt(tok[0]), Integer.parseInt(tok[1]), null);
+                                this.addEdge(Integer.parseUnsignedInt(tok[0]), Integer.parseUnsignedInt(tok[1]), null);
                             } else if (tok.length == 3) {
-                                this.addEdge(Integer.parseInt(tok[0]), Integer.parseInt(tok[1]), tok[2]);
+                                this.addEdge(Integer.parseUnsignedInt(tok[0]), Integer.parseUnsignedInt(tok[1]), tok[2]);
                             }
                         } else if (format == GraphInputFormat.ADJACENCY) {
                         /* Adjacency list: <vertex-id> <count> <neighbor-1> <neighbor-2> ... */
-                            int vertexId = Integer.parseInt(tok[0]);
-                            int len = Integer.parseInt(tok[1]);
+                            int vertexId = Integer.parseUnsignedInt(tok[0]);
+                            int len = Integer.parseUnsignedInt(tok[1]);
                             if (len != tok.length - 2) {
                                 if (lineNum < 10) {
                                     throw new IllegalArgumentException("Error on line " + lineNum + "; number of edges does not match number of tokens:" +
@@ -716,7 +716,7 @@ public class FastSharder <VertexValueType, EdgeValueType> {
                                 }
                             }
                             for(int j=2; j < 2 + len; j++) {
-                                int dest = Integer.parseInt(tok[j]);
+                                int dest = Integer.parseUnsignedInt(tok[j]);
                                 this.addEdge(vertexId, dest, null);
                             }
                         } else {
@@ -744,8 +744,8 @@ public class FastSharder <VertexValueType, EdgeValueType> {
                         String[] tok = ln.split(" ");
                         if (lineNum % 2000000 == 0) logger.info("Reading line: " + lineNum + " / " + totalEdges);
                         if (!parsedMatrixSize) {
-                            numLeft = Integer.parseInt(tok[0]);
-                            numRight = Integer.parseInt(tok[1]);
+                            numLeft = Integer.parseUnsignedInt(tok[0]);
+                            numRight = Integer.parseUnsignedInt(tok[1]);
                             totalEdges = Long.parseLong(tok[2]);
                             logger.info("Matrix-market: going to load total of " + totalEdges + " edges.");
                             parsedMatrixSize = true;
@@ -754,7 +754,7 @@ public class FastSharder <VertexValueType, EdgeValueType> {
                             /* Vertex - ids on the right side of the bipartite graph have id numLeft + originalId */
                             try {
                                 String lastTok = tok[tok.length - 1];
-                                this.addEdge(Integer.parseInt(tok[0]) - 1, numLeft + Integer.parseInt(tok[1]) - 1, lastTok);
+                                this.addEdge(Integer.parseUnsignedInt(tok[0]) - 1, numLeft + Integer.parseUnsignedInt(tok[1]) - 1, lastTok);
                             } catch (NumberFormatException nfe) {
                                 logger.severe("Could not parse line: " + ln);
                                 throw nfe;
