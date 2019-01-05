@@ -452,6 +452,9 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
             vertexDataHandler.close();
         logger.info("Engine finished in: " + (System.currentTimeMillis() - startTime) * 0.001 + " secs.");
         logger.info("Updates: " + nupdates);
+        FileWriter writer = new FileWriter("drunkardmob.statistics", true);   
+        writer.write("Engine finished in: " + "\t" + (System.currentTimeMillis() - startTime) * 0.001 + "\t" + " secs." + "\n" );   
+        writer.close();   
     }
 
     private boolean anyVertexScheduled(int subIntervalStart, int lastVertex) {

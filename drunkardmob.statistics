@@ -1,0 +1,77 @@
+2018.12.26 count the performance of Drunkardmob
+DataSet = Friendster
+numsources = 1000, walkspersource = 2000, firstsource = 12
+nsources =  1
+Engine finished in: 	1151.984	 secs.
+Engine finished in: 	1062.224	 secs.
+Engine finished in: 	1082.832	 secs.
+nsources =  10
+Engine finished in: 	1180.662	 secs.
+Engine finished in: 	1190.59	 secs.
+Engine finished in: 	1191.134	 secs.
+Engine finished in: 	1189.045	 secs.
+Engine finished in: 	1189.9560000000001	 secs.
+nsources =  100
+Engine finished in: 	1211.1970000000001	 secs.
+Engine finished in: 	1213.852	 secs.
+Engine finished in: 	1240.799	 secs.
+nsources =  1000
+Engine finished in: 	1249.577	 secs.
+Engine finished in: 	1250.0810000000001	 secs.
+Engine finished in: 	1246.458	 secs.
+nsources =  10000
+Engine finished in: 	1252.479	 secs.
+Engine finished in: 	1251.269	 secs.
+Engine finished in: 	1257.272	 secs.
+
+2019.1.4
+///////////////////////////////////////////////////////////
+2019.1.4 count the performance of Drunkardmob
+app = Drunkardmob-MSPPR, dataset = Twitter
+numsources = 1000, walkspersource = 2000, firstsource = 12
+nsources =  1
+Engine finished in: 	0.874	 secs.
+Engine finished in: 	0.888	 secs.
+Engine finished in: 	0.884	 secs.
+nsources =  10
+Engine finished in: 	607.049	 secs.
+Engine finished in: 	671.571	 secs.
+Engine finished in: 	669.071	 secs.
+nsources =  100
+Engine finished in: 	680.713	 secs.
+Engine finished in: 	706.664	 secs.
+Engine finished in: 	701.999	 secs.
+nsources =  1000
+Engine finished in: 	729.451	 secs.
+Engine finished in: 	736.585	 secs.
+Engine finished in: 	739.522	 secs.
+nsources =  10000
+Engine finished in: 	742.2810000000001	 secs.
+Engine finished in: 	743.166	 secs.
+Engine finished in: 	744.394	 secs.
+nsources =  100000
+Engine finished in: 	1.022	 secs.
+Engine finished in: 	746.075	 secs.
+
+2019.1.4 count the performance of Drunkardmob
+app = Drunkardmob-MSPPR, dataset = Twitter
+numsources = 1000, walkspersource = 2000, firstsource = 13
+nsources =  1
+Engine finished in: 	743.533	 secs.
+Engine finished in: 	742.903	 secs.
+Engine finished in: 	740.696	 secs.
+nsources =  10
+Engine finished in: 	751.923	 secs.
+Engine finished in: 	757.519	 secs.
+Engine finished in: 	757.8290000000001	 secs.
+nsources =  100
+Engine finished in: 	755.096	 secs.
+Engine finished in: 	758.027	 secs.
+Engine finished in: 	758.788	 secs.
+nsources =  1000
+Engine finished in: 	762.42	 secs.
+Engine finished in: 	771.731	 secs.
+nsources =  10000
+
+2019.1.5 count the performance of Drunkardmob in Yahoo on ccc
+/////////////////////////////////////////////////////////////////////
