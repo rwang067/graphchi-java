@@ -191,6 +191,7 @@ public class FastSharder <VertexValueType, EdgeValueType> {
      */
     private void addToShovel(int shard, int preTranslatedIdFrom, int preTranslatedTo,
                              EdgeValueType value) throws IOException {
+        if(shard < 0) shard += numShards;
         DataOutputStream strm = shovelStreams[shard];
         strm.writeLong(packEdges(preTranslatedIdFrom, preTranslatedTo));
         if (edgeValueTypeBytesToValueConverter != null) {
