@@ -24,38 +24,9 @@ Engine finished in: 	1252.479	 secs.
 Engine finished in: 	1251.269	 secs.
 Engine finished in: 	1257.272	 secs.
 
-2019.1.4
-///////////////////////////////////////////////////////////
 2019.1.4 count the performance of Drunkardmob
 app = Drunkardmob-MSPPR, dataset = Twitter
-numsources = 1000, walkspersource = 2000, firstsource = 12
-nsources =  1
-Engine finished in: 	0.874	 secs.
-Engine finished in: 	0.888	 secs.
-Engine finished in: 	0.884	 secs.
-nsources =  10
-Engine finished in: 	607.049	 secs.
-Engine finished in: 	671.571	 secs.
-Engine finished in: 	669.071	 secs.
-nsources =  100
-Engine finished in: 	680.713	 secs.
-Engine finished in: 	706.664	 secs.
-Engine finished in: 	701.999	 secs.
-nsources =  1000
-Engine finished in: 	729.451	 secs.
-Engine finished in: 	736.585	 secs.
-Engine finished in: 	739.522	 secs.
-nsources =  10000
-Engine finished in: 	742.2810000000001	 secs.
-Engine finished in: 	743.166	 secs.
-Engine finished in: 	744.394	 secs.
-nsources =  100000
-Engine finished in: 	1.022	 secs.
-Engine finished in: 	746.075	 secs.
-
-2019.1.4 count the performance of Drunkardmob
-app = Drunkardmob-MSPPR, dataset = Twitter
-numsources = 1000, walkspersource = 2000, firstsource = 13
+walkspersource = 2000, firstsource = 13
 nsources =  1
 Engine finished in: 	743.533	 secs.
 Engine finished in: 	742.903	 secs.
@@ -75,3 +46,31 @@ nsources =  10000
 
 2019.1.5 count the performance of Drunkardmob in Yahoo on ccc
 /////////////////////////////////////////////////////////////////////
+2019.1.5 count the performance of Drunkardmob in Yahoo on ccc
+app = Drunkardmob-MSPPR, dataset = Yahoo
+walkspersource = 2000, firstsource = 9
+nsources =  1
+Engine finished in: 	1649.044	 secs.
+Engine finished in: 	1655.5520000000001	 secs.
+Engine finished in: 	1654.832	 secs.
+nsources =  10
+Engine finished in: 	1663.233	 secs.
+Engine finished in: 	1645.548	 secs.
+Engine finished in: 	1631.9850000000001	 secs.
+nsources =  100
+Engine finished in: 	1769.269	 secs.
+Engine finished in: 	1732.4	 secs.
+Engine finished in: 	1712.075	 secs.
+nsources =  1000
+Engine finished in: 	2311.401	 secs.
+Engine finished in: 	2245.542	 secs.
+Engine finished in: 	2222.168	 secs.
+nsources =  10000
+Engine finished in: 	2898.027	 secs.
+Engine finished in: 	2835.185	 secs.
+Engine finished in: 	2860.574	 secs.
+nsources =  100000
+Engine finished in: 	3414.302	 secs.
+Engine finished in: 	3356.607	 secs.
+Engine finished in: 	3454.755	 secs.
+nsources =  1000000
