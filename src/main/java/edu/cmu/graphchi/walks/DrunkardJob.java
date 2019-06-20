@@ -40,6 +40,32 @@ public class DrunkardJob {
     }
 
     /**
+     * Start walks from random Sources -- 20190620 Rui
+     * @param firstSourceId
+     * @param numSources  how many sources
+     * @param walksPerSource how many walks to start from each source
+     */
+    public void configureRandomWalks(int numSources, int walksPerSource) {
+        if (walkManager != null) {
+            throw new IllegalStateException("You can configure walks only once!");
+        }
+        walkManager = factory.createWalkManager(numVertices, numSources);
+
+        for(int i=0; i < numSources; i++) {
+            int v = (int)( Math.random() * numVertices );
+            walkManager.addWalkBatch(v, walksPerSource);
+        }
+    }
+
+    /**
+     * Start walks from all vertices -- 20190620 Rui
+     * @param walksPerSource how many walks to start from each source
+     */
+    public void configureWalksFromAllVertices(int walksPerSource) {
+        configureSourceRangeInternalIds(0, numVertices, walksPerSource);
+    }
+
+    /**
      * Configure walks starting from list of vertices
      * @param walkSources
      * @param walksPerSource

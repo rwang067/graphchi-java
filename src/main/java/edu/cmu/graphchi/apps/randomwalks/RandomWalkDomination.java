@@ -36,13 +36,12 @@ import java.util.logging.Logger;
  * getNotTrackedVertices()
  * @author Aapo Kyrola
  */
-public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
+public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, EmptyType> {
 
     private static double RESET_PROBABILITY = 0.15;
-    private static Logger logger = ChiLogger.getLogger("graphlet");
+    private static Logger logger = ChiLogger.getLogger("personalized-pagerank");
     private DrunkardMobEngine<EmptyType, EmptyType>  drunkardMobEngine;
     private String baseFilename;
-    private int numSources;
     private int numWalksPerSource;
     private String companionUrl;
     //20190619 by Rui -- used for counting IO utilizations
@@ -50,13 +49,12 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
     private int[] numedges;
     private int[] used_edges;
 
-    public Graphlet(String companionUrl, String baseFilename, int nShards, int numSources, int walksPerSource) throws Exception{
+    public RandomWalkDomination(String companionUrl, String baseFilename, int nShards, int walksPerSource) throws Exception{
         this.baseFilename = baseFilename;
         this.drunkardMobEngine = new DrunkardMobEngine<EmptyType, EmptyType>(baseFilename, nShards,
                 new IntDrunkardFactory());
 
         this.companionUrl = companionUrl;
-        this.numSources = numSources;
         this.numWalksPerSource = walksPerSource;
 
         /////////////////////////
@@ -90,19 +88,29 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
         }
 
         /* Configure walk sources. Note, GraphChi's internal ids are used. */
-        DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("Graphlet",
+        DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("RandomWalkDomination",
                 EdgeDirection.OUT_EDGES, this, companion);
 
         //start walks
         // drunkardJob.configureSourceRangeInternalIds(firstSource, numSources, numWalksPerSource);
-        drunkardJob.configureRandomWalks( numSources, numWalksPerSource);
+        drunkardJob.configureWalksFromAllVertices(numWalksPerSource);
         drunkardMobEngine.run(numIters);
 
-        /* Ask companion to dump the results to file */
-        int nTop = 100;
+        // /* Ask companion to dump the results to file */
+        // int nTop = 100;
         // companion.outputDistributions(baseFilename + "_DrunkardMob/ppr_" + firstSource + "_"
         //         + (firstSource + numSources - 1) + ".top" + nTop, nTop);
 
+        // /* For debug */
+        // VertexIdTranslate vertexIdTranslate = this.drunkardMobEngine.getVertexIdTranslate();
+        // for(int i=0; i < numSources; i++) {
+        //     IdCount[] topForFirst = companion.getTop(firstSource+i, 10);
+
+        //     System.out.println("Top visits from source vertex " + vertexIdTranslate.forward(firstSource+i) + " (internal id=" + firstSource+i + ")");
+        //     for(IdCount idc : topForFirst) {
+        //         System.out.println(vertexIdTranslate.backward(idc.id) + ": " + idc.count);
+        //     }
+        // }
 
         /* If local, shutdown the companion */
         if (companion instanceof DrunkardCompanion) {
@@ -203,7 +211,6 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
         cmdLineOptions.addOption("g", "graph", true, "graph file name");
         cmdLineOptions.addOption("n", "nshards", true, "number of shards");
         cmdLineOptions.addOption("t", "filetype", true, "filetype (edgelist|adjlist)");
-        cmdLineOptions.addOption("s", "nsources", true, "number of sources");
         cmdLineOptions.addOption("w", "walkspersource", true, "number of walks to start from each source");
         cmdLineOptions.addOption("i", "niters", true, "number of iterations");
         cmdLineOptions.addOption("u", "companion", true, "RMI url to the DrunkardCompanion or 'local' (default)");
@@ -253,19 +260,18 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
             }
 
             // Run
-            int numSources = Integer.parseInt(cmdLine.getOptionValue("nsources"));
             int walksPerSource = Integer.parseInt(cmdLine.getOptionValue("walkspersource"));
             int nIters = Integer.parseInt(cmdLine.getOptionValue("niters"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            Graphlet gh = new Graphlet(companionUrl, baseFilename, nShards, numSources, walksPerSource);
-            gh.execute(nIters);
+            RandomWalkDomination rwd = new RandomWalkDomination(companionUrl, baseFilename, nShards, walksPerSource);
+            rwd.execute(nIters);
             System.exit(0);
         } catch (Exception err) {
             err.printStackTrace();
             // automatically generate the help statement
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("Graphlet", cmdLineOptions);
+            formatter.printHelp("RandomWalkDomination", cmdLineOptions);
         }
     }
 }

@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.Naming;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -36,28 +38,37 @@ import java.util.logging.Logger;
  * getNotTrackedVertices()
  * @author Aapo Kyrola
  */
-public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
+public class SimRank implements WalkUpdateFunction<EmptyType, EmptyType> {
 
     private static double RESET_PROBABILITY = 0.15;
-    private static Logger logger = ChiLogger.getLogger("graphlet");
+    private static Logger logger = ChiLogger.getLogger("SimRank");
     private DrunkardMobEngine<EmptyType, EmptyType>  drunkardMobEngine;
     private String baseFilename;
-    private int numSources;
+    private int sourceA;
+    private int sourceB;
     private int numWalksPerSource;
     private String companionUrl;
     //20190619 by Rui -- used for counting IO utilizations
     int nThreads;
     private int[] numedges;
     private int[] used_edges;
+    //20190620 by Rui -- used for trace path
+    int length;
+    private int[] patha;
+    private int[] pathb;
 
-    public Graphlet(String companionUrl, String baseFilename, int nShards, int numSources, int walksPerSource) throws Exception{
+    public SimRank(String companionUrl, String baseFilename, int nShards, int sourceA, int sourceB, int walksPerSource, int length) throws Exception{
         this.baseFilename = baseFilename;
         this.drunkardMobEngine = new DrunkardMobEngine<EmptyType, EmptyType>(baseFilename, nShards,
                 new IntDrunkardFactory());
 
         this.companionUrl = companionUrl;
-        this.numSources = numSources;
+        this.sourceA = sourceA;
+        this.sourceB = sourceB;
         this.numWalksPerSource = walksPerSource;
+        this.length = length;
+        patha = new int[length];
+        pathb = new int[length];
 
         /////////////////////////
         (new File("drunkardmob_utilization.csv")).delete();
@@ -90,12 +101,15 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
         }
 
         /* Configure walk sources. Note, GraphChi's internal ids are used. */
-        DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("Graphlet",
+        DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("SimRank",
                 EdgeDirection.OUT_EDGES, this, companion);
 
         //start walks
         // drunkardJob.configureSourceRangeInternalIds(firstSource, numSources, numWalksPerSource);
-        drunkardJob.configureRandomWalks( numSources, numWalksPerSource);
+        ArrayList<Integer> walkSources = new ArrayList<Integer>();
+        walkSources.add(sourceA);
+        walkSources.add(sourceB);
+        drunkardJob.configureWalkSources( walkSources, numWalksPerSource);
         drunkardMobEngine.run(numIters);
 
         /* Ask companion to dump the results to file */
@@ -203,7 +217,8 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
         cmdLineOptions.addOption("g", "graph", true, "graph file name");
         cmdLineOptions.addOption("n", "nshards", true, "number of shards");
         cmdLineOptions.addOption("t", "filetype", true, "filetype (edgelist|adjlist)");
-        cmdLineOptions.addOption("s", "nsources", true, "number of sources");
+        cmdLineOptions.addOption("a", "sourcea", true, "source a");
+        cmdLineOptions.addOption("b", "sourceb", true, "source b");
         cmdLineOptions.addOption("w", "walkspersource", true, "number of walks to start from each source");
         cmdLineOptions.addOption("i", "niters", true, "number of iterations");
         cmdLineOptions.addOption("u", "companion", true, "RMI url to the DrunkardCompanion or 'local' (default)");
@@ -253,19 +268,20 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
             }
 
             // Run
-            int numSources = Integer.parseInt(cmdLine.getOptionValue("nsources"));
+            int sourceA = Integer.parseInt(cmdLine.getOptionValue("sourcea"));
+            int sourceB = Integer.parseInt(cmdLine.getOptionValue("sourceb"));
             int walksPerSource = Integer.parseInt(cmdLine.getOptionValue("walkspersource"));
             int nIters = Integer.parseInt(cmdLine.getOptionValue("niters"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            Graphlet gh = new Graphlet(companionUrl, baseFilename, nShards, numSources, walksPerSource);
+            SimRank gh = new SimRank(companionUrl, baseFilename, nShards, sourceA, sourceB, walksPerSource, nIters);
             gh.execute(nIters);
             System.exit(0);
         } catch (Exception err) {
             err.printStackTrace();
             // automatically generate the help statement
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("Graphlet", cmdLineOptions);
+            formatter.printHelp("SimRank", cmdLineOptions);
         }
     }
 }

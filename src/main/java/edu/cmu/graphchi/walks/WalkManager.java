@@ -102,11 +102,11 @@ public abstract class WalkManager {
         if (sourceSeqIdx >= sources.length)
             throw new IllegalStateException("You can have a maximum of " + sources.length + " random walk sources");
 
-        if (sourceSeqIdx > 0) {
-            if (sources[sourceSeqIdx - 1] > vertex) {
-                throw new IllegalArgumentException("You need to add sources in order!");
-            }
-        }
+        // if (sourceSeqIdx > 0) {
+        //     if (sources[sourceSeqIdx - 1] > vertex) {
+        //         throw new IllegalArgumentException("You need to add sources in order!");
+        //     }
+        // }
 
         sources[sourceSeqIdx] = vertex;
         sourceWalkCounts[sourceSeqIdx] = numWalks;
