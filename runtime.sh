@@ -43,7 +43,7 @@
 
     # walkspersource = 2000, firstsource = 9
     echo "walkspersource = 2000, firstsource = 9" >> drunkardmob.statistics 
-    for(( nsources = 1; nsources <= 100000; nsources*=10))
+    for(( nsources = 1000000; nsources <= 100000000; nsources*=10))
     do
         echo "nsources = " $nsources >> drunkardmob.statistics 
 	    for(( times = 0; times < 3; times++))
