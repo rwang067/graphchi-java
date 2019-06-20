@@ -18,9 +18,12 @@ package edu.cmu.graphchi.engine;
 
 public class VertexInterval {
 
+    public int execInterval;
+
     private int firstVertex;
 
-    public VertexInterval(int firstVertex, int lastVertex) {
+    public VertexInterval(int execInterval, int firstVertex, int lastVertex) {
+        this.execInterval = execInterval;
         this.firstVertex = firstVertex;
         this.lastVertex = lastVertex;
     }

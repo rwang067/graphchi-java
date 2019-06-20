@@ -176,7 +176,11 @@ public abstract class DrunkardDriver<VertexDataType, EdgeDataType> implements Gr
         job.getWalkManager().setBucketConsumer(this);
     }
 
-    public void endInterval(GraphChiContext ctx, VertexInterval interval) {}
+    public void endInterval(GraphChiContext ctx, VertexInterval interval) {
+        System.out.println("================endInterval=====================");
+        callback.compUtilization(interval.execInterval);
+        System.out.println("================compUtilization=====================");
+    }
 
     public void consume(int firstVertexInBucket, WalkArray walkBucket, int len) {
         try {

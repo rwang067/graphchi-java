@@ -20,6 +20,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import javax.security.auth.callback.Callback;
+
 /**
  * Copyright [2012] [Aapo Kyrola, Guy Blelloch, Carlos Guestrin / Carnegie Mellon University]
  *
@@ -374,7 +376,7 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                             if (Integer.MAX_VALUE - subIntervalEnd < maxWindow) adjMaxWindow = Integer.MAX_VALUE - subIntervalEnd - 1;
 
                             if (subIntervalEnd + 1 <= intervalEn) {
-                                nextWindow = new FutureTask<IntervalData>(new AutoLoaderTask(new VertexInterval(subIntervalEnd + 1,
+                                nextWindow = new FutureTask<IntervalData>(new AutoLoaderTask(new VertexInterval(execInterval, subIntervalEnd + 1,
                                         Math.min(intervalEn, subIntervalEnd + 1 + adjMaxWindow)), execInterval, memoryShard));
                             } else if (execInterval < nShards - 1) {
                                 int nextIntervalSt = intervals.get(execInterval + 1).getFirstVertex();
@@ -382,7 +384,7 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
 
                                 slidingShards.get(execInterval).setOffset(memoryShard.getStreamingOffset(),
                                         memoryShard.getStreamingOffsetVid(), memoryShard.getStreamingOffsetEdgePtr());
-                                nextWindow = new FutureTask<IntervalData>(new AutoLoaderTask(new VertexInterval(nextIntervalSt,
+                                nextWindow = new FutureTask<IntervalData>(new AutoLoaderTask(new VertexInterval(execInterval,nextIntervalSt,
                                         Math.min(nextIntervalEn, nextIntervalSt + 1 + adjMaxWindow)), execInterval + 1,
                                         createMemoryShard(nextIntervalSt, nextIntervalEn, execInterval + 1)));
 
@@ -394,8 +396,8 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                         /* Clear scheduler bits */
                         if (scheduler != null) scheduler.removeTasks(subIntervalStart, subIntervalEnd);
 
-                        chiContext.setCurInterval(new VertexInterval(subIntervalStart, subIntervalEnd));
-                        program.beginSubInterval(chiContext, new VertexInterval(subIntervalStart, subIntervalEnd));
+                        chiContext.setCurInterval(new VertexInterval(execInterval, subIntervalStart, subIntervalEnd));
+                        program.beginSubInterval(chiContext, new VertexInterval(execInterval, subIntervalStart, subIntervalEnd));
 
                         long t1 = System.currentTimeMillis();
                         execUpdates(program, vertices);
@@ -417,7 +419,7 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
 
                         subIntervalStart = subIntervalEnd + 1;
 
-                        program.endSubInterval(chiContext, new VertexInterval(subIntervalStart, subIntervalEnd));
+                        program.endSubInterval(chiContext, new VertexInterval(execInterval, subIntervalStart, subIntervalEnd));
 
                     }  else {
                         subIntervalEnd = subIntervalStart + adjMaxWindow;
@@ -436,6 +438,9 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                                 memoryShard.getStreamingOffsetVid(), memoryShard.getStreamingOffsetEdgePtr());
                     }
                 }
+
+                program.endInterval(chiContext, intervals.get(execInterval));
+
             }
 
             for(SlidingShard shard : slidingShards) {
@@ -759,10 +764,10 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                 int vertexBlockid = initVertices(nVertices, interval.getFirstVertex(), vertices);
 
                 loadBeforeUpdates(intervalNum, vertices, memShard, interval.getFirstVertex(), lastVertex);
-                return new IntervalData(new VertexInterval(interval.getFirstVertex(), lastVertex), vertices, vertexBlockid, memShard, intervalNum);
+                return new IntervalData(new VertexInterval(intervalNum, interval.getFirstVertex(), lastVertex), vertices, vertexBlockid, memShard, intervalNum);
 
             } catch (NoEdgesInIntervalException nie) {
-                return new IntervalData(new VertexInterval(interval.getFirstVertex(), interval.getLastVertex()), vertices, -1, memShard, intervalNum);
+                return new IntervalData(new VertexInterval(intervalNum, interval.getFirstVertex(), interval.getLastVertex()), vertices, -1, memShard, intervalNum);
 
             } catch (Exception err) {
                 err.printStackTrace();

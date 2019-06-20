@@ -1,6 +1,8 @@
 package edu.cmu.graphchi.walks;
 
 import edu.cmu.graphchi.ChiVertex;
+import edu.cmu.graphchi.GraphChiContext;//
+import edu.cmu.graphchi.engine.VertexInterval;//
 
 import java.util.Random;
 
@@ -30,4 +32,8 @@ public interface WalkUpdateFunction<VertexDataType, EdgeDataType> {
                               ChiVertex<VertexDataType, EdgeDataType> vertex,
                               DrunkardContext drunkardContext,
                               Random randomGenerator);
+    /**
+     * Callback
+     */
+    void compUtilization(int execInterval);
 }

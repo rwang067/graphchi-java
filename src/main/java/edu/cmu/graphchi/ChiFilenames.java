@@ -27,11 +27,11 @@ public class ChiFilenames {
     public static String vertexDataSuffix = "";
 
     public static String getFilenameOfVertexData(String baseFilename, BytesToValueConverter valueConv, boolean sparse) {
-        return baseFilename + "." + valueConv.sizeOf() + "Bj.vout" + vertexDataSuffix  + (sparse ? ".sparse" : "");
+        return baseFilename + "_DrunkardMob/" + valueConv.sizeOf() + "Bj.vout" + vertexDataSuffix  + (sparse ? ".sparse" : "");
     }
 
     public static String getFilenameOfDegreeData(String baseFilename, boolean sparse) {
-        return baseFilename + "_degsj.bin" + (sparse ? ".sparse" : "");
+        return baseFilename + "_DrunkardMob/degsj.bin" + (sparse ? ".sparse" : "");
     }
 
     public static String getPartStr(int p, int nShards) {
@@ -59,19 +59,19 @@ public class ChiFilenames {
     }
 
     public static String getFilenameShardEdata(String baseFilename, BytesToValueConverter valueConv, int p, int nShards) {
-        return baseFilename + ".edata_java.e" + valueConv.sizeOf() + "B." + p + "_" + nShards;
+        return baseFilename + "_DrunkardMob/edata_java.e" + valueConv.sizeOf() + "B." + p + "_" + nShards;
     }
 
     public static String getFilenameShardsAdj(String baseFilename, int p, int nShards) {
-        return baseFilename + ".edata_java." + p + "_" + nShards + ".adj";
+        return baseFilename + "_DrunkardMob/edata_java." + p + "_" + nShards + ".adj";
     }
 
     public static String getFilenameIntervals(String baseFilename, int nShards) {
-        return baseFilename + "." + nShards + ".intervalsjava";
+        return baseFilename + "_DrunkardMob/" + nShards + ".intervalsjava";
     }
 
     public static String getVertexTranslateDefFile(String baseFilename, int nshards) {
-        return baseFilename + "." + nshards + ".vtranslate";
+        return baseFilename + "_DrunkardMob/" + nshards + ".vtranslate";
     }
 
     public static int getBlocksize(int sizeOf) {
@@ -103,9 +103,10 @@ public class ChiFilenames {
         String line;
         int lastId = 0;
         ArrayList<VertexInterval> intervals = new ArrayList<VertexInterval>(nShards);
+        int p =0;
         while((line = rd.readLine()) != null) {
             int vid = Integer.parseInt(line);
-            intervals.add(new VertexInterval(lastId, vid));
+            intervals.add(new VertexInterval(p++,lastId, vid));
             lastId = vid + 1;
         }
         return intervals;

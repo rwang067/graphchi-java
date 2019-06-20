@@ -134,11 +134,11 @@ public class FastSharder <VertexValueType, EdgeValueType> {
     }
 
     private String shovelFilename(int i) {
-        return baseFilename + ".shovel." + i;
+        return baseFilename + "_DrunkardMob/shovel." + i;
     }
 
     private String vertexShovelFileName(int i) {
-        return baseFilename + ".vertexshovel." + i;
+        return baseFilename + "_DrunkardMob/vertexshovel." + i;
     }
 
 
@@ -564,7 +564,10 @@ public class FastSharder <VertexValueType, EdgeValueType> {
         adjOut.close();
         indexOut.close();
 
-
+        //**count edges */
+        FileWriter writer = new FileWriter(ChiFilenames.getFilenameIntervals(baseFilename, numShards)+".edgenums", true);   
+        writer.write(edgeCounter + "\n" );   
+        writer.close();
 
         /**
          * Step 2: EDGE DATA

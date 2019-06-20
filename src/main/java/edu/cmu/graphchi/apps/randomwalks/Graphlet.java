@@ -36,10 +36,10 @@ import java.util.logging.Logger;
  * getNotTrackedVertices()
  * @author Aapo Kyrola
  */
-public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, EmptyType> {
+public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
 
     private static double RESET_PROBABILITY = 0.15;
-    private static Logger logger = ChiLogger.getLogger("personalized-pagerank");
+    private static Logger logger = ChiLogger.getLogger("graphlet");
     private DrunkardMobEngine<EmptyType, EmptyType>  drunkardMobEngine;
     private String baseFilename;
     private int firstSource;
@@ -51,7 +51,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
     private int[] numedges;
     private int[] used_edges;
 
-    public PersonalizedPageRank(String companionUrl, String baseFilename, int nShards, int firstSource, int numSources, int walksPerSource) throws Exception{
+    public Graphlet(String companionUrl, String baseFilename, int nShards, int firstSource, int numSources, int walksPerSource) throws Exception{
         this.baseFilename = baseFilename;
         this.drunkardMobEngine = new DrunkardMobEngine<EmptyType, EmptyType>(baseFilename, nShards,
                 new IntDrunkardFactory());
@@ -92,7 +92,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
         }
 
         /* Configure walk sources. Note, GraphChi's internal ids are used. */
-        DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("personalizedPageRank",
+        DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("Graphlet",
                 EdgeDirection.OUT_EDGES, this, companion);
 
         //start walks
@@ -271,7 +271,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
             int nIters = Integer.parseInt(cmdLine.getOptionValue("niters"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            PersonalizedPageRank pp = new PersonalizedPageRank(companionUrl, baseFilename, nShards,
+            Graphlet pp = new Graphlet(companionUrl, baseFilename, nShards,
                     firstSource, numSources, walksPerSource);
             pp.execute(nIters);
             System.exit(0);
@@ -279,7 +279,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
             err.printStackTrace();
             // automatically generate the help statement
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("PersonalizedPageRank", cmdLineOptions);
+            formatter.printHelp("Graphlet", cmdLineOptions);
         }
     }
 }
