@@ -27,11 +27,11 @@ public class ChiFilenames {
     public static String vertexDataSuffix = "";
 
     public static String getFilenameOfVertexData(String baseFilename, BytesToValueConverter valueConv, boolean sparse) {
-        return baseFilename + "../../raid0_defghij/Crawl_DrunkardMob/" + valueConv.sizeOf() + "Bj.vout" + vertexDataSuffix  + (sparse ? ".sparse" : "");
+        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/" + valueConv.sizeOf() + "Bj.vout" + vertexDataSuffix  + (sparse ? ".sparse" : "");
     }
 
     public static String getFilenameOfDegreeData(String baseFilename, boolean sparse) {
-        return baseFilename + "../../raid0_defghij/Crawl_DrunkardMob/degsj.bin" + (sparse ? ".sparse" : "");
+        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/degsj.bin" + (sparse ? ".sparse" : "");
     }
 
     public static String getPartStr(int p, int nShards) {
@@ -59,19 +59,19 @@ public class ChiFilenames {
     }
 
     public static String getFilenameShardEdata(String baseFilename, BytesToValueConverter valueConv, int p, int nShards) {
-        return baseFilename + "../../raid0_defghij/Crawl_DrunkardMob/edata_java.e" + valueConv.sizeOf() + "B." + p + "_" + nShards;
+        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/edata_java.e" + valueConv.sizeOf() + "B." + p + "_" + nShards;
     }
 
     public static String getFilenameShardsAdj(String baseFilename, int p, int nShards) {
-        return baseFilename + "../../raid0_defghij/Crawl_DrunkardMob/edata_java." + p + "_" + nShards + ".adj";
+        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/edata_java." + p + "_" + nShards + ".adj";
     }
 
     public static String getFilenameIntervals(String baseFilename, int nShards) {
-        return baseFilename + "../../raid0_defghij/Crawl_DrunkardMob/" + nShards + ".intervalsjava";
+        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/" + nShards + ".intervalsjava";
     }
 
     public static String getVertexTranslateDefFile(String baseFilename, int nshards) {
-        return baseFilename + "../../raid0_defghij/Crawl_DrunkardMob/" + nshards + ".vtranslate";
+        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/" + nshards + ".vtranslate";
     }
 
     public static int getBlocksize(int sizeOf) {
