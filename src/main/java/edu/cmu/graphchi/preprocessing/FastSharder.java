@@ -134,11 +134,11 @@ public class FastSharder <VertexValueType, EdgeValueType> {
     }
 
     private String shovelFilename(int i) {
-        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/shovel." + i;
+        return baseFilename + ChiFilenames.graphFilePrefix + "shovel." + i;
     }
 
     private String vertexShovelFileName(int i) {
-        return baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/vertexshovel." + i;
+        return baseFilename + ChiFilenames.graphFilePrefix + "vertexshovel." + i;
     }
 
 

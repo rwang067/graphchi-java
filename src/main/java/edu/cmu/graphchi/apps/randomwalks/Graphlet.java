@@ -100,7 +100,7 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
 
         /* Ask companion to dump the results to file */
         int nTop = 100;
-        // companion.outputDistributions(baseFilename + "/../../raid0_defghij/Crawl_DrunkardMob/ppr_" + firstSource + "_"
+        // companion.outputDistributions(baseFilename + ChiFilenames.graphFilePrefix + "ppr_" + firstSource + "_"
         //         + (firstSource + numSources - 1) + ".top" + nTop, nTop);
 
 
@@ -224,9 +224,14 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
             /**
              * Mkdir --20190619 by Rui
              */
-            File dirpath = new File(baseFilename+"/../../raid0_defghij/Crawl_DrunkardMob/");
+            File dirpath = new File(baseFilename+"_DrunkardMob/");
             if ( !dirpath.exists()){
                 dirpath.mkdir();
+            }
+            File dirpath1 = new File(baseFilename+ChiFilenames.graphFilePrefix);
+            logger.info(baseFilename+ChiFilenames.graphFilePrefix);
+            if ( !dirpath1.exists()){
+                dirpath1.mkdir();
             }
 
             /* Create shards */
@@ -246,7 +251,7 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
              * Delete shoverl files --20190620 by Rui
              */
             for(int i = 0; i < nShards; i++){
-                File f = new File(baseFilename+"/../../raid0_defghij/Crawl_DrunkardMob/shovel."+i);
+                File f = new File(baseFilename+ChiFilenames.graphFilePrefix + "shovel."+i);
                 if ( !f.exists()){
                     f.delete();
                 }
