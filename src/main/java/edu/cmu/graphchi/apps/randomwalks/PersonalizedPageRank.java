@@ -101,7 +101,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
 
         /* Ask companion to dump the results to file */
         int nTop = 100;
-        companion.outputDistributions(baseFilename + "_DrunkardMob/ppr_" + firstSource + "_"
+        companion.outputDistributions(baseFilename + "../../raid0_defghij/Crawl_DrunkardMob/ppr_" + firstSource + "_"
                 + (firstSource + numSources - 1) + ".top" + nTop, nTop);
 
         // /* For debug */
@@ -236,7 +236,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
             /**
              * Mkdir --20190619 by Rui
              */
-            File dirpath = new File(baseFilename+"_DrunkardMob/");
+            File dirpath = new File(baseFilename+"../../raid0_defghij/Crawl_DrunkardMob/");
             if ( !dirpath.exists()){
                 dirpath.mkdir();
             }
@@ -258,7 +258,7 @@ public class PersonalizedPageRank implements WalkUpdateFunction<EmptyType, Empty
              * Delete shoverl files --20190620 by Rui
              */
             for(int i = 0; i < nShards; i++){
-                File f = new File(baseFilename+"_DrunkardMob/shovel."+i);
+                File f = new File(baseFilename+"../../raid0_defghij/Crawl_DrunkardMob/shovel."+i);
                 if ( !f.exists()){
                     f.delete();
                 }
