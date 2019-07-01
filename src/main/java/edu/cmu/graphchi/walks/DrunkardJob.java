@@ -22,6 +22,14 @@ public class DrunkardJob {
         this.factory = factory;
     }
 
+    //no companion -- Rui
+    public DrunkardJob(String name, int numVertices,
+            DrunkardFactory factory) {
+        this.name = name;
+        this.numVertices = numVertices;
+        this.factory = factory;
+    }
+
     /**
      * Start walks from vertex firstSourceId to firstSourceId + numSources
      * @param firstSourceId

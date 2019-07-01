@@ -78,9 +78,13 @@ public abstract class WalkManager {
     }
 
     public int getVertexSourceIdx(int vertexId) {
-        int idx = Arrays.binarySearch(sources, vertexId);
-        if (idx < 0) throw new IllegalArgumentException("Vertex was not a source!");
-        return idx;
+        // int idx = Arrays.binarySearch(sources, vertexId);
+        // if (idx < 0) throw new IllegalArgumentException("Vertex was not a source!");
+        
+        for(int idx = 0; idx < sources.length; idx++)
+            if(sources[idx] == vertexId)
+                return idx;
+        throw new IllegalArgumentException("Vertex was not a source!");
     }
 
     public int[] getSources() {

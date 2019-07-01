@@ -124,6 +124,37 @@ public class DrunkardMobEngine<VertexDataType, EdgeDataType> {
         return job;
     }
 
+    /** -- Rui 2019.7.1
+     * Adds a random walk job.  Use run() to run all the jobs.
+     * @param edgeDirection which direction edges need to be considered
+     * @param callback your walk logic
+     * @return the job object
+     */
+    public DrunkardJob addJob(String jobName, EdgeDirection edgeDirection,
+                              WalkUpdateFunction<VertexDataType, EdgeDataType> callback) {
+
+        /* Configure engine parameters */
+        switch(edgeDirection) {
+            case IN_AND_OUT_EDGES:
+                engine.setDisableInedges(false);
+                engine.setDisableOutEdges(false);
+                break;
+            case IN_EDGES:
+                engine.setDisableInedges(false);
+                break;
+            case OUT_EDGES:
+                engine.setDisableOutEdges(false);
+                break;
+        }
+
+        /**
+         * Create job object and the driver-object.
+         */
+        DrunkardJob job = new DrunkardJob(jobName, engine.numVertices(), factory);
+        drivers.add(factory.createDrunkardDriver(job, callback));
+        return job;
+    }
+
 
     public void run(int numIterations) throws IOException, RemoteException {
         engine.setEnableScheduler(true);

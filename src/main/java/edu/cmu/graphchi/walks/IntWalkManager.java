@@ -1,6 +1,9 @@
 package edu.cmu.graphchi.walks;
 
 import com.yammer.metrics.core.TimerContext;
+
+import org.apache.tools.ant.taskdefs.Length;
+
 import edu.cmu.graphchi.ChiLogger;
 import edu.cmu.graphchi.Scheduler;
 import edu.cmu.graphchi.engine.VertexInterval;
@@ -99,7 +102,9 @@ public class IntWalkManager extends WalkManager {
             walks[bucket] = new int[initialSize];
         } else {
             if (idx == walks[bucket].length) {
-                int[] newBucket = new int[walks[bucket].length * 3 / 2];
+                int newlength = walks[bucket].length * 3 / 2;
+                if(walks[bucket].length == 1) newlength = 32; //Rui 2019.7.1
+                int[] newBucket = new int[newlength];
                 System.arraycopy(walks[bucket], 0, newBucket, 0, walks[bucket].length);
                 walks[bucket] = newBucket;
             }
@@ -156,7 +161,7 @@ public class IntWalkManager extends WalkManager {
             expandCapacity(b, tmpsizes[b]);
         }
 
-        logger.info("Allocating walks");
+        logger.info("Allocating walks, sourceSeqIdx = " + sourceSeqIdx);
         for(int i=0; i < sourceSeqIdx; i++) {
             int source = sources[i];
             int count = sourceWalkCounts[i];
@@ -177,6 +182,7 @@ public class IntWalkManager extends WalkManager {
         logger.info("Set bitset...");
         // Create source-bitset
         for(int i=0; i < sourceSeqIdx; i++) {
+            // logger.info("Set bitset of " + sources[i] + " = true");
             sourceBitSet.set(sources[i], true);
         }
     }

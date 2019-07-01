@@ -58,15 +58,15 @@ public abstract class DrunkardDriver<VertexDataType, EdgeDataType> implements Gr
 
     public void update(ChiVertex<VertexDataType, EdgeDataType> vertex,
             final GraphChiContext context, final LocalWalkBuffer localBuf) {
-        try {
+        // try {
             // Flow control
-            while (pendingWalksToSubmit.get() > job.getWalkManager().getTotalWalks() / 40) {
-                //System.out.println("Too many walks waiting for delivery: " + pendingWalksToSubmit.get());
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                }
-            }
+            // while (pendingWalksToSubmit.get() > job.getWalkManager().getTotalWalks() / 40) {
+            //     //System.out.println("Too many walks waiting for delivery: " + pendingWalksToSubmit.get());
+            //     try {
+            //         Thread.sleep(500);
+            //     } catch (InterruptedException e) {
+            //     }
+            // }
 
             boolean  firstIteration = (context.getIteration() == 0);
             WalkArray walksAtMe = curWalkSnapshot.getWalksAtVertex(vertex.getId(), true);
@@ -80,7 +80,7 @@ public abstract class DrunkardDriver<VertexDataType, EdgeDataType> implements Gr
                 if (job.getWalkManager().isSource(vertex.getId())) {
                     int mySourceIdx = job.getWalkManager().getVertexSourceIdx(vertex.getId());
 
-                    job.getCompanion().setAvoidList(mySourceIdx, callback.getNotTrackedVertices(vertex));
+                    // job.getCompanion().setAvoidList(mySourceIdx, callback.getNotTrackedVertices(vertex));
                 }
             }
             if (walksAtMe == null || walksAtMe.size() == 0) return;
@@ -89,14 +89,14 @@ public abstract class DrunkardDriver<VertexDataType, EdgeDataType> implements Gr
 
             DrunkardContext drunkardContext = createDrunkardContext(vertex.getId(), context, localBuf);
             callback.processWalksAtVertex(walksAtMe, vertex, drunkardContext, randomGenerator);
-        } catch (RemoteException re) {
-            throw new RuntimeException(re);
-        }
+        // } catch (RemoteException re) {
+        //     throw new RuntimeException(re);
+        // }
     }
 
     public void initWalks() throws RemoteException{
         job.getWalkManager().initializeWalks();
-        job.getCompanion().setSources(job.getWalkManager().getSources());
+        // job.getCompanion().setSources(job.getWalkManager().getSources());
     }
 
     public void beginIteration(GraphChiContext ctx) {
