@@ -47,9 +47,9 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
     private int L;
     // private String companionUrl;
     //20190619 by Rui -- used for counting IO utilizations
-    int nThreads;
-    private int[] numedges;
-    private int[] used_edges;
+    // int nThreads;
+    // private int[] numedges;
+    // private int[] used_edges;
 
     public RawRandomWalks(String companionUrl, String baseFilename, int nShards, int N, int R, int L) throws Exception{
         this.baseFilename = baseFilename;
@@ -61,22 +61,22 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         this.R = R;
         this.L = L;
 
-        /////////////////////////
-        (new File("drunkardmob_utilization.csv")).delete();
+        // /////////////////////////
+        // (new File("drunkardmob_utilization.csv")).delete();
 
-        numedges = new int[nShards];
-        BufferedReader rd = new BufferedReader(new FileReader(new File(ChiFilenames.getFilenameIntervals(baseFilename, nShards)+".edgenums")));
-        String line;
-        for(int i = 0; i < nShards; i++) {
-            line = rd.readLine();
-            numedges[i] = Integer.parseInt(line);
-        }
+        // numedges = new int[nShards];
+        // BufferedReader rd = new BufferedReader(new FileReader(new File(ChiFilenames.getFilenameIntervals(baseFilename, nShards)+".edgenums")));
+        // String line;
+        // for(int i = 0; i < nShards; i++) {
+        //     line = rd.readLine();
+        //     numedges[i] = Integer.parseInt(line);
+        // }
         
-        nThreads = Runtime.getRuntime().availableProcessors();
-        used_edges = new int[nThreads];
-        for(int i=0; i<nThreads; i++){
-            used_edges[i] = 0;
-        }
+        // nThreads = Runtime.getRuntime().availableProcessors();
+        // used_edges = new int[nThreads];
+        // for(int i=0; i<nThreads; i++){
+        //     used_edges[i] = 0;
+        // }
     }
 
     private void execute(int numIters) throws Exception {
@@ -142,7 +142,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
             
             //***********Rui************
             // used_edges[0] += numWalks;
-            used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
+            // used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
 
             for(int i=0; i < numWalks; i++) {
                 int walk = walks[i];
@@ -196,23 +196,23 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
 
     @Override
     public void compUtilization(int execInterval){
-        logger.info("compUtilization...");
-        for(int i = 1; i < nThreads; i++){
-            used_edges[0] += used_edges[i];
-        }
-        float utilization = (float)used_edges[0] / (float)numedges[execInterval];
-        try{
-            FileWriter writer = new FileWriter("drunkardmob_utilization.csv", true);   
-            writer.write(execInterval + "\t" + numedges[execInterval] + "\t" + used_edges[0] + "\t" + utilization + "\n" );   
-            writer.close();
-        } catch(IOException ie) {
-            ie.printStackTrace();
-        } 
-        // logstream(LOG_DEBUG) << "IO utilization = " << utilization << std::endl;
+        // logger.info("compUtilization...");
+        // for(int i = 1; i < nThreads; i++){
+        //     used_edges[0] += used_edges[i];
+        // }
+        // float utilization = (float)used_edges[0] / (float)numedges[execInterval];
+        // try{
+        //     FileWriter writer = new FileWriter("drunkardmob_utilization.csv", true);   
+        //     writer.write(execInterval + "\t" + numedges[execInterval] + "\t" + used_edges[0] + "\t" + utilization + "\n" );   
+        //     writer.close();
+        // } catch(IOException ie) {
+        //     ie.printStackTrace();
+        // } 
+        // // logstream(LOG_DEBUG) << "IO utilization = " << utilization << std::endl;
 
-        for(int i=0; i<nThreads; i++){
-            used_edges[i] = 0;
-        }
+        // for(int i=0; i<nThreads; i++){
+        //     used_edges[i] = 0;
+        // }
     }
 
     public static void main(String[] args) throws Exception {
