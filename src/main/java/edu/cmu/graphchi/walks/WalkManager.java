@@ -47,7 +47,7 @@ public abstract class WalkManager {
     public WalkManager(int numVertices, int numSources) {
         setSourceAndBucketBits();
         this.numVertices = numVertices;
-        if (numSources > MAX_SOURCES) throw new IllegalArgumentException("Max sources: " + numSources);
+        // if (numSources > MAX_SOURCES) throw new IllegalArgumentException("Max sources: " + numSources);
         sources = new int[numSources];
         sourceWalkCounts = new int[numSources];
         sourceBitSet = new BitSet(numVertices);
