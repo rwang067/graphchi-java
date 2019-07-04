@@ -1,7 +1,7 @@
 package edu.cmu.graphchi.apps.randomwalks;
 
 import edu.cmu.graphchi.*;
-import edu.cmu.graphchi.engine.VertexInterval;//
+import edu.cmu.graphchi.engine.VertexInterval;
 import edu.cmu.graphchi.preprocessing.FastSharder;
 import edu.cmu.graphchi.preprocessing.VertexIdTranslate;
 import edu.cmu.graphchi.util.IdCount;
@@ -39,39 +39,21 @@ import java.util.logging.Logger;
 public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, EmptyType> {
 
     private static double RESET_PROBABILITY = 0.15;
-    private static Logger logger = ChiLogger.getLogger("personalized-pagerank");
+    private static Logger logger = ChiLogger.getLogger("RandomWalkDomination");
     private DrunkardMobEngine<EmptyType, EmptyType>  drunkardMobEngine;
     private String baseFilename;
+    private int N;
     private int numWalksPerSource;
     private String companionUrl;
-    //20190619 by Rui -- used for counting IO utilizations
-    int nThreads;
-    private int[] numedges;
-    private int[] used_edges;
 
-    public RandomWalkDomination(String companionUrl, String baseFilename, int nShards, int walksPerSource) throws Exception{
+    public RandomWalkDomination(String companionUrl, String baseFilename, int nShards, int N, int walksPerSource) throws Exception{
         this.baseFilename = baseFilename;
+        this.N = N;
         this.drunkardMobEngine = new DrunkardMobEngine<EmptyType, EmptyType>(baseFilename, nShards,
                 new IntDrunkardFactory());
 
         this.companionUrl = companionUrl;
         this.numWalksPerSource = walksPerSource;
-
-        /////////////////////////
-        (new File("drunkardmob_utilization.csv")).delete();
-        numedges = new int[nShards];
-        BufferedReader rd = new BufferedReader(new FileReader(new File(ChiFilenames.getFilenameIntervals(baseFilename, nShards)+".edgenums")));
-        String line;
-        for(int i = 0; i < nShards; i++) {
-            line = rd.readLine();
-            numedges[i] = Integer.parseInt(line);
-        }
-        
-        nThreads = Runtime.getRuntime().availableProcessors();
-        used_edges = new int[nThreads];
-        for(int i=0; i<nThreads; i++){
-            used_edges[i] = 0;
-        }
     }
 
     private void execute(int numIters) throws Exception {
@@ -136,15 +118,14 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
         // Advance each walk to a random out-edge (if any)
         if (numOutEdges > 0) {
 
-            //***********Rui************
-            used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
-            // used_edges[0] += numWalks;
-
             for(int i=0; i < numWalks; i++) {
                 int walk = walks[i];
 
                 // Reset?
                 if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
+                    int nextHop  = (int)( Math.random() * N );
+                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
                     ;//drunkardContext.resetWalk(walk, false);
                 } else {
                     int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
@@ -159,6 +140,10 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
         } else {
             // Reset all walks -- no where to go from here
             for(int i=0; i < numWalks; i++) {
+                int walk = walks[i]; 
+                int nextHop  = (int)( Math.random() * N );
+                boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
                 ;//drunkardContext.resetWalk(walks[i], false);
             }
         }
@@ -185,23 +170,6 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
 
     @Override
     public void compUtilization(int execInterval){
-        logger.info("compUtilization...");
-        for(int i = 1; i < nThreads; i++){
-            used_edges[0] += used_edges[i];
-        }
-        float utilization = (float)used_edges[0] / (float)numedges[execInterval];
-        try{
-            FileWriter writer = new FileWriter("drunkardmob_utilization.csv", true);   
-            writer.write(execInterval + "\t" + numedges[execInterval] + "\t" + used_edges[0] + "\t" + utilization + "\n" );   
-            writer.close();
-        } catch(IOException ie) {
-            ie.printStackTrace();
-        } 
-        // logstream(LOG_DEBUG) << "IO utilization = " << utilization << std::endl;
-
-        for(int i=0; i<nThreads; i++){
-            used_edges[i] = 0;
-        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -211,6 +179,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
         cmdLineOptions.addOption("g", "graph", true, "graph file name");
         cmdLineOptions.addOption("n", "nshards", true, "number of shards");
         cmdLineOptions.addOption("t", "filetype", true, "filetype (edgelist|adjlist)");
+        cmdLineOptions.addOption("N", "nvertices", true, "id of the first source vertex (internal id)");
         cmdLineOptions.addOption("w", "walkspersource", true, "number of walks to start from each source");
         cmdLineOptions.addOption("i", "niters", true, "number of iterations");
         cmdLineOptions.addOption("u", "companion", true, "RMI url to the DrunkardCompanion or 'local' (default)");
@@ -226,6 +195,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
              */
             String baseFilename = cmdLine.getOptionValue("graph");
             int nShards = Integer.parseInt(cmdLine.getOptionValue("nshards"));
+            int N = Integer.parseInt(cmdLine.getOptionValue("nvertices"));
             String fileType = (cmdLine.hasOption("filetype") ? cmdLine.getOptionValue("filetype") : null);
 
             /**
@@ -269,7 +239,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
             int nIters = Integer.parseInt(cmdLine.getOptionValue("niters"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            RandomWalkDomination rwd = new RandomWalkDomination(companionUrl, baseFilename, nShards, walksPerSource);
+            RandomWalkDomination rwd = new RandomWalkDomination(companionUrl, baseFilename, nShards, N, walksPerSource);
             rwd.execute(nIters);
             System.exit(0);
         } catch (Exception err) {

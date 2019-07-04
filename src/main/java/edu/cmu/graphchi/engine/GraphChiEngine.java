@@ -536,6 +536,7 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                 final int myId = thrId;
                 final int chunkStart = myId * chunkSize;
                 final int chunkEnd = chunkStart + chunkSize;
+                // logger.info("chunkStart = " + chunkStart + ", chunkEnd = " + chunkEnd);
 
                 parallelExecutor.submit(new Runnable() {
 
@@ -552,6 +553,8 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                                     thrupdates++;
                                     program.update(vertex, threadContext);
                                 }
+                                // if( (i-chunkStart)%100000 == 0 )
+                                //     logger.info("Processed vertices : " + (i-100000) + " -- " + i);
                             }
 
                         } catch (Exception e) {

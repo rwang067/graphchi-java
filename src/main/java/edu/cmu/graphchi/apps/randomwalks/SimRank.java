@@ -13,6 +13,7 @@ import edu.cmu.graphchi.walks.IntDrunkardFactory;
 import edu.cmu.graphchi.walks.IntWalkArray;
 import edu.cmu.graphchi.walks.WalkUpdateFunction;
 import edu.cmu.graphchi.walks.WalkArray;
+import edu.cmu.graphchi.walks.WalkManager;
 import edu.cmu.graphchi.walks.WeightedHopper;
 import edu.cmu.graphchi.walks.distributions.IntDrunkardCompanion;
 import edu.cmu.graphchi.walks.distributions.DrunkardCompanion;
@@ -48,14 +49,12 @@ public class SimRank implements WalkUpdateFunction<EmptyType, EmptyType> {
     private int sourceB;
     private int numWalksPerSource;
     private String companionUrl;
-    //20190619 by Rui -- used for counting IO utilizations
-    int nThreads;
-    private int[] numedges;
-    private int[] used_edges;
     //20190620 by Rui -- used for trace path
     int length;
     private int[] patha;
     private int[] pathb;
+    private int la;
+    private int lb;
 
     public SimRank(String companionUrl, String baseFilename, int nShards, int sourceA, int sourceB, int walksPerSource, int length) throws Exception{
         this.baseFilename = baseFilename;
@@ -66,43 +65,28 @@ public class SimRank implements WalkUpdateFunction<EmptyType, EmptyType> {
         this.sourceA = sourceA;
         this.sourceB = sourceB;
         this.numWalksPerSource = walksPerSource;
-        this.length = length;
+        this.length = length*walksPerSource;
         patha = new int[length];
         pathb = new int[length];
-
-        /////////////////////////
-        (new File("drunkardmob_utilization.csv")).delete();
-        numedges = new int[nShards];
-        BufferedReader rd = new BufferedReader(new FileReader(new File(ChiFilenames.getFilenameIntervals(baseFilename, nShards)+".edgenums")));
-        String line;
-        for(int i = 0; i < nShards; i++) {
-            line = rd.readLine();
-            numedges[i] = Integer.parseInt(line);
-        }
-        
-        nThreads = Runtime.getRuntime().availableProcessors();
-        used_edges = new int[nThreads];
-        for(int i=0; i<nThreads; i++){
-            used_edges[i] = 0;
-        }
+        la = lb = 0;
     }
 
     private void execute(int numIters) throws Exception {
-        File graphFile = new File(baseFilename);
+        // File graphFile = new File(baseFilename);
 
-        /** Use local drunkard mob companion. You can also pass a remote reference
-         *  by using Naming.lookup("rmi://my-companion")
-         */
-        RemoteDrunkardCompanion companion;
-        if (companionUrl.equals("local")) {
-            companion = new IntDrunkardCompanion(4, Runtime.getRuntime().maxMemory() / 3);
-        }  else {
-            companion = (RemoteDrunkardCompanion) Naming.lookup(companionUrl);
-        }
+        // /** Use local drunkard mob companion. You can also pass a remote reference
+        //  *  by using Naming.lookup("rmi://my-companion")
+        //  */
+        // RemoteDrunkardCompanion companion;
+        // if (companionUrl.equals("local")) {
+        //     companion = new IntDrunkardCompanion(4, Runtime.getRuntime().maxMemory() / 3);
+        // }  else {
+        //     companion = (RemoteDrunkardCompanion) Naming.lookup(companionUrl);
+        // }
 
         /* Configure walk sources. Note, GraphChi's internal ids are used. */
         DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("SimRank",
-                EdgeDirection.OUT_EDGES, this, companion);
+                EdgeDirection.OUT_EDGES, this);
 
         //start walks
         // drunkardJob.configureSourceRangeInternalIds(firstSource, numSources, numWalksPerSource);
@@ -113,15 +97,15 @@ public class SimRank implements WalkUpdateFunction<EmptyType, EmptyType> {
         drunkardMobEngine.run(numIters);
 
         /* Ask companion to dump the results to file */
-        int nTop = 100;
+        // int nTop = 100;
         // companion.outputDistributions(baseFilename + ChiFilenames.graphFilePrefix + "ppr_" + firstSource + "_"
         //         + (firstSource + numSources - 1) + ".top" + nTop, nTop);
 
 
-        /* If local, shutdown the companion */
-        if (companion instanceof DrunkardCompanion) {
-            ((DrunkardCompanion) companion).close();
-        }
+        // /* If local, shutdown the companion */
+        // if (companion instanceof DrunkardCompanion) {
+        //     ((DrunkardCompanion) companion).close();
+        // }
     }
 
     /**
@@ -136,38 +120,46 @@ public class SimRank implements WalkUpdateFunction<EmptyType, EmptyType> {
         IntDrunkardContext drunkardContext = (IntDrunkardContext) drunkardContext_;
         int numWalks = walks.length;
         int numOutEdges = vertex.numOutEdges();
-        int numInEdges = vertex.numInEdges();
-
         
-        // Advance each walk to a random out-edge (if any)
-        if (numOutEdges > 0) {
+        for(int i=0; i < numWalks; i++) {
+            int walk = walks[i];
 
-            //***********Rui************
-            used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
-            // used_edges[0] += numWalks;
+            int curSource = ((walk & 0xffffff00) >> 8) & 0xffffff;
+            int nextHop;
 
-            for(int i=0; i < numWalks; i++) {
-                int walk = walks[i];
+            // Reset?
+            if (numOutEdges==0 || randomGenerator.nextDouble() < RESET_PROBABILITY ) {
+                nextHop  = curSource;
+                drunkardContext.resetWalk(walk, false);
+            } else {
+                nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
 
-                // Reset?
-                if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
-                    ;//drunkardContext.resetWalk(walk, false);
-                } else {
-                    int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
-
-                    // Optimization to tell the manager that walks that have just been started
-                    // need not to be tracked.
-                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
-                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
-                }
+                // Optimization to tell the manager that walks that have just been started
+                // need not to be tracked.
+                boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
             }
 
-        } else {
-            // Reset all walks -- no where to go from here
-            for(int i=0; i < numWalks; i++) {
-                ;//drunkardContext.resetWalk(walks[i], false);
+            if(curSource == sourceA && la < length){
+                patha[la++] = nextHop;
+            }else if(curSource == sourceB  && lb < length){
+                pathb[lb++] = nextHop;
+            }else{
+                // logger.info("Wrong source or length! curSource = " + curSource + ", length = " + length);
+            }
+
+        }
+    }
+
+    public float compSimRank(){
+        float simrank = 0;
+        length = Math.min(la, lb);
+        for( int i = 0; i < length; i++ ){
+            if( patha[i] == pathb[i] && patha[i] != 0xffffffff ){
+                simrank += (1.0/(numWalksPerSource))*Math.pow(0.8, i);
             }
         }
+		return simrank;
     }
 
 
@@ -191,23 +183,6 @@ public class SimRank implements WalkUpdateFunction<EmptyType, EmptyType> {
 
     @Override
     public void compUtilization(int execInterval){
-        logger.info("compUtilization...");
-        for(int i = 1; i < nThreads; i++){
-            used_edges[0] += used_edges[i];
-        }
-        float utilization = (float)used_edges[0] / (float)numedges[execInterval];
-        try{
-            FileWriter writer = new FileWriter("drunkardmob_utilization.csv", true);   
-            writer.write(execInterval + "\t" + numedges[execInterval] + "\t" + used_edges[0] + "\t" + utilization + "\n" );   
-            writer.close();
-        } catch(IOException ie) {
-            ie.printStackTrace();
-        } 
-        // logstream(LOG_DEBUG) << "IO utilization = " << utilization << std::endl;
-
-        for(int i=0; i<nThreads; i++){
-            used_edges[i] = 0;
-        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -279,8 +254,10 @@ public class SimRank implements WalkUpdateFunction<EmptyType, EmptyType> {
             int nIters = Integer.parseInt(cmdLine.getOptionValue("niters"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            SimRank gh = new SimRank(companionUrl, baseFilename, nShards, sourceA, sourceB, walksPerSource, nIters);
-            gh.execute(nIters);
+            SimRank sr = new SimRank(companionUrl, baseFilename, nShards, sourceA, sourceB, walksPerSource, nIters);
+            sr.execute(nIters);
+            float simRankValue = sr.compSimRank();
+            logger.info("SimRank of " + sourceA + " and " + sourceB + " = " + simRankValue);
             System.exit(0);
         } catch (Exception err) {
             err.printStackTrace();

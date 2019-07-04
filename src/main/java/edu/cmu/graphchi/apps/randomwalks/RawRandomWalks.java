@@ -1,10 +1,7 @@
 package edu.cmu.graphchi.apps.randomwalks;
 
 import edu.cmu.graphchi.*;
-import edu.cmu.graphchi.engine.VertexInterval;//
 import edu.cmu.graphchi.preprocessing.FastSharder;
-import edu.cmu.graphchi.preprocessing.VertexIdTranslate;
-import edu.cmu.graphchi.util.IdCount;
 import edu.cmu.graphchi.walks.DrunkardContext;
 import edu.cmu.graphchi.walks.DrunkardJob;
 import edu.cmu.graphchi.walks.DrunkardMobEngine;
@@ -13,19 +10,11 @@ import edu.cmu.graphchi.walks.IntDrunkardFactory;
 import edu.cmu.graphchi.walks.IntWalkArray;
 import edu.cmu.graphchi.walks.WalkUpdateFunction;
 import edu.cmu.graphchi.walks.WalkArray;
-import edu.cmu.graphchi.walks.WeightedHopper;
-import edu.cmu.graphchi.walks.distributions.IntDrunkardCompanion;
-import edu.cmu.graphchi.walks.distributions.DrunkardCompanion;
-import edu.cmu.graphchi.walks.distributions.RemoteDrunkardCompanion;
 import org.apache.commons.cli.*;
 
-import java.io.FileWriter;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.rmi.Naming;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -80,7 +69,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
     }
 
     private void execute(int numIters) throws Exception {
-        File graphFile = new File(baseFilename);
+        // File graphFile = new File(baseFilename);
 
         /** Use local drunkard mob companion. You can also pass a remote reference
          *  by using Naming.lookup("rmi://my-companion")
@@ -102,7 +91,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         drunkardMobEngine.run(numIters);
 
         /* Ask companion to dump the results to file */
-        int nTop = 100;
+        // int nTop = 100;
         // companion.outputDistributions(baseFilename + ChiFilenames.graphFilePrefix + "_rawrandomwalks.top" + nTop, nTop);
 
         // /* For debug */
@@ -134,7 +123,6 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         IntDrunkardContext drunkardContext = (IntDrunkardContext) drunkardContext_;
         int numWalks = walks.length;
         int numOutEdges = vertex.numOutEdges();
-        int numInEdges = vertex.numInEdges();
 
         // logger.info("processWalksAtVertex : " + vertex.getId());
         // Advance each walk to a random out-edge (if any)

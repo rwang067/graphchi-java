@@ -138,6 +138,7 @@ public class IntWalkManager extends WalkManager {
             walkIndices[i] = 0;
         }
 
+        logger.info("sourceSeqIdx = " + sourceSeqIdx + ", sources.length = " + sources.length);
         /* Truncate sources */
         if (sourceSeqIdx < sources.length) {
             logger.info("Truncating...");
@@ -234,7 +235,8 @@ public class IntWalkManager extends WalkManager {
             public long numWalks() {
                 long sum = 0;
                 for(int b=fromBucket; b <= toBucket; b++) {
-                    sum += walks[b].length;
+                    if(walks[b] != null)
+                        sum += walks[b].length;
                 }
                 return sum;
             }

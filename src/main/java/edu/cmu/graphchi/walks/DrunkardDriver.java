@@ -68,21 +68,21 @@ public abstract class DrunkardDriver<VertexDataType, EdgeDataType> implements Gr
             //     }
             // }
 
-            boolean  firstIteration = (context.getIteration() == 0);
+            // boolean  firstIteration = (context.getIteration() == 0);
             WalkArray walksAtMe = curWalkSnapshot.getWalksAtVertex(vertex.getId(), true);
 
             // Very dirty memory management
             curWalkSnapshot.clear(vertex.getId());
 
-            // On first iteration, we ask the callback for list of vertices
-            // that should not be tracked
-            if (firstIteration) {
-                if (job.getWalkManager().isSource(vertex.getId())) {
-                    int mySourceIdx = job.getWalkManager().getVertexSourceIdx(vertex.getId());
+            // // On first iteration, we ask the callback for list of vertices
+            // // that should not be tracked
+            // if (firstIteration) {
+            //     if (job.getWalkManager().isSource(vertex.getId())) {
+            //         int mySourceIdx = job.getWalkManager().getVertexSourceIdx(vertex.getId());
 
-                    // job.getCompanion().setAvoidList(mySourceIdx, callback.getNotTrackedVertices(vertex));
-                }
-            }
+            //         job.getCompanion().setAvoidList(mySourceIdx, callback.getNotTrackedVertices(vertex));
+            //     }
+            // }
             if (walksAtMe == null || walksAtMe.size() == 0) return;
 
             Random randomGenerator = localBuf.random;
@@ -138,6 +138,7 @@ public abstract class DrunkardDriver<VertexDataType, EdgeDataType> implements Gr
         long t = System.currentTimeMillis();
         curWalkSnapshot = job.getWalkManager().grabSnapshot(interval.getFirstVertex(), interval.getLastVertex());
         logger.info("Grab snapshot took " + (System.currentTimeMillis() - t) + " ms.");
+        logger.info("curWalkSnapshot took " + curWalkSnapshot.numWalks() + " walks.");
 
         while(localBuffers.size() > 0) {
             try {
