@@ -43,12 +43,14 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
     private DrunkardMobEngine<EmptyType, EmptyType>  drunkardMobEngine;
     private String baseFilename;
     private int N;
+    private int s;
     private int numWalksPerSource;
     private String companionUrl;
 
-    public RandomWalkDomination(String companionUrl, String baseFilename, int nShards, int N, int walksPerSource) throws Exception{
+    public RandomWalkDomination(String companionUrl, String baseFilename, int nShards, int N, int s, int walksPerSource) throws Exception{
         this.baseFilename = baseFilename;
         this.N = N;
+        this.s = s;
         this.drunkardMobEngine = new DrunkardMobEngine<EmptyType, EmptyType>(baseFilename, nShards,
                 new IntDrunkardFactory());
 
@@ -74,7 +76,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
                 EdgeDirection.OUT_EDGES, this, companion);
 
         //start walks
-        drunkardJob.configureSourceRangeInternalIds(0, 1, N);
+        drunkardJob.configureSourceRangeInternalIds(s, 1, N*numWalksPerSource);
         // drunkardJob.configureWalksFromAllVertices(numWalksPerSource);
         drunkardMobEngine.run(numIters);
 
@@ -122,6 +124,8 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
                     boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
                     drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
                 }
+            }else{
+                logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
             }
         }else{
             // Advance each walk to a random out-edge (if any)
@@ -192,6 +196,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
         cmdLineOptions.addOption("N", "nvertices", true, "id of the first source vertex (internal id)");
         cmdLineOptions.addOption("w", "walkspersource", true, "number of walks to start from each source");
         cmdLineOptions.addOption("i", "niters", true, "number of iterations");
+        cmdLineOptions.addOption("s", "source", true, "fake source");
         cmdLineOptions.addOption("u", "companion", true, "RMI url to the DrunkardCompanion or 'local' (default)");
 
         try {
@@ -206,6 +211,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
             String baseFilename = cmdLine.getOptionValue("graph");
             int nShards = Integer.parseInt(cmdLine.getOptionValue("nshards"));
             int N = Integer.parseInt(cmdLine.getOptionValue("nvertices"));
+            int s = Integer.parseInt(cmdLine.getOptionValue("source"));
             String fileType = (cmdLine.hasOption("filetype") ? cmdLine.getOptionValue("filetype") : null);
 
             /**
@@ -249,7 +255,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
             int nIters = Integer.parseInt(cmdLine.getOptionValue("niters"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            RandomWalkDomination rwd = new RandomWalkDomination(companionUrl, baseFilename, nShards, N, walksPerSource);
+            RandomWalkDomination rwd = new RandomWalkDomination(companionUrl, baseFilename, nShards, N, s, walksPerSource);
             rwd.execute(nIters);
             System.exit(0);
         } catch (Exception err) {
