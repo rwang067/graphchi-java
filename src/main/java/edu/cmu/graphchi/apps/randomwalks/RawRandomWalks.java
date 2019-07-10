@@ -34,13 +34,14 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
     private int N;
     private int R;
     private int L;
+    private int s;
     // private String companionUrl;
     //20190619 by Rui -- used for counting IO utilizations
     // int nThreads;
     // private int[] numedges;
     // private int[] used_edges;
 
-    public RawRandomWalks(String companionUrl, String baseFilename, int nShards, int N, int R, int L) throws Exception{
+    public RawRandomWalks(String companionUrl, String baseFilename, int nShards, int N, int R, int L, int s) throws Exception{
         this.baseFilename = baseFilename;
         this.drunkardMobEngine = new DrunkardMobEngine<EmptyType, EmptyType>(baseFilename, nShards,
                 new IntDrunkardFactory());
@@ -69,46 +70,15 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
     }
 
     private void execute(int numIters) throws Exception {
-        // File graphFile = new File(baseFilename);
-
-        /** Use local drunkard mob companion. You can also pass a remote reference
-         *  by using Naming.lookup("rmi://my-companion")
-         */
-        // RemoteDrunkardCompanion companion;
-        // if (companionUrl.equals("local")) {
-        //     companion = new IntDrunkardCompanion(4, Runtime.getRuntime().maxMemory() / 3);
-        // }  else {
-        //     companion = (RemoteDrunkardCompanion) Naming.lookup(companionUrl);
-        // }
-
         /* Configure walk sources. Note, GraphChi's internal ids are used. */
         DrunkardJob drunkardJob = this.drunkardMobEngine.addJob("personalizedPageRank",
                 EdgeDirection.OUT_EDGES, this);
 
         //start walks
         logger.info("configureRandomWalks, R = " + R);
-        drunkardJob.configureRandomWalks(R, 1);
+        // drunkardJob.configureRandomWalks(R, 1);
+        drunkardJob.configureSourceRangeInternalIds(s, 1, R);
         drunkardMobEngine.run(numIters);
-
-        /* Ask companion to dump the results to file */
-        // int nTop = 100;
-        // companion.outputDistributions(baseFilename + ChiFilenames.graphFilePrefix + "_rawrandomwalks.top" + nTop, nTop);
-
-        // /* For debug */
-        // VertexIdTranslate vertexIdTranslate = this.drunkardMobEngine.getVertexIdTranslate();
-        // for(int i=0; i < numSources; i++) {
-        //     IdCount[] topForFirst = companion.getTop(firstSource+i, 10);
-
-        //     System.out.println("Top visits from source vertex " + vertexIdTranslate.forward(firstSource+i) + " (internal id=" + firstSource+i + ")");
-        //     for(IdCount idc : topForFirst) {
-        //         System.out.println(vertexIdTranslate.backward(idc.id) + ": " + idc.count);
-        //     }
-        // }
-
-        // /* If local, shutdown the companion */
-        // if (companion instanceof DrunkardCompanion) {
-        //     ((DrunkardCompanion) companion).close();
-        // }
     }
 
     /**
@@ -129,7 +99,6 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         if (numOutEdges > 0) {
             
             //***********Rui************
-            // used_edges[0] += numWalks;
             // used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
 
             for(int i=0; i < numWalks; i++) {
@@ -211,8 +180,9 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         cmdLineOptions.addOption("n", "nshards", true, "number of shards");
         cmdLineOptions.addOption("t", "filetype", true, "filetype (edgelist|adjlist)");
         cmdLineOptions.addOption("N", "nvertices", true, "id of the first source vertex (internal id)");
-        cmdLineOptions.addOption("R", "nsources", true, "number of sources");
+        cmdLineOptions.addOption("R", "nwalks", true, "number of walks");
         cmdLineOptions.addOption("L", "niters", true, "number of iterations");
+        cmdLineOptions.addOption("s", "source", true, "fake source");
         cmdLineOptions.addOption("u", "companion", true, "RMI url to the DrunkardCompanion or 'local' (default)");
 
         try {
@@ -266,11 +236,12 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
 
             // Run
             int N = Integer.parseInt(cmdLine.getOptionValue("nvertices"));
-            int R = Integer.parseInt(cmdLine.getOptionValue("nsources"));
+            int R = Integer.parseInt(cmdLine.getOptionValue("nwalks"));
             int L = Integer.parseInt(cmdLine.getOptionValue("niters"));
+            int s = Integer.parseInt(cmdLine.getOptionValue("source"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            RawRandomWalks pp = new RawRandomWalks(companionUrl, baseFilename, nShards, N, R, L);
+            RawRandomWalks pp = new RawRandomWalks(companionUrl, baseFilename, nShards, N, R, L, s);
             pp.execute(L);
             System.exit(0);
         } catch (Exception err) {
