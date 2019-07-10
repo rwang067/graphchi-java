@@ -74,8 +74,8 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
                 EdgeDirection.OUT_EDGES, this, companion);
 
         //start walks
-        // drunkardJob.configureSourceRangeInternalIds(firstSource, numSources, numWalksPerSource);
-        drunkardJob.configureWalksFromAllVertices(numWalksPerSource);
+        drunkardJob.configureSourceRangeInternalIds(0, 1, N);
+        // drunkardJob.configureWalksFromAllVertices(numWalksPerSource);
         drunkardMobEngine.run(numIters);
 
         // /* Ask companion to dump the results to file */
@@ -114,37 +114,47 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
         int numOutEdges = vertex.numOutEdges();
         int numInEdges = vertex.numInEdges();
 
-        
-        // Advance each walk to a random out-edge (if any)
-        if (numOutEdges > 0) {
-
-            for(int i=0; i < numWalks; i++) {
-                int walk = walks[i];
-
-                // Reset?
-                if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
+        if(vertex.getId() == 0 && drunkardContext.getIteration()==0){
+            if(numWalks == N){ 
+                for(int i = 0; i < N; i++){
+                    int walk = walks[i];
                     int nextHop  = (int)( Math.random() * N );
-                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
-                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
-                    ;//drunkardContext.resetWalk(walk, false);
-                } else {
-                    int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
-
-                    // Optimization to tell the manager that walks that have just been started
-                    // need not to be tracked.
                     boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
                     drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
                 }
             }
+        }else{
+            // Advance each walk to a random out-edge (if any)
+            if (numOutEdges > 0) {
 
-        } else {
-            // Reset all walks -- no where to go from here
-            for(int i=0; i < numWalks; i++) {
-                int walk = walks[i]; 
-                int nextHop  = (int)( Math.random() * N );
-                boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
-                drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
-                ;//drunkardContext.resetWalk(walks[i], false);
+                for(int i=0; i < numWalks; i++) {
+                    int walk = walks[i];
+
+                    // Reset?
+                    if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
+                        int nextHop  = (int)( Math.random() * N );
+                        boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                        drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                        ;//drunkardContext.resetWalk(walk, false);
+                    } else {
+                        int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
+
+                        // Optimization to tell the manager that walks that have just been started
+                        // need not to be tracked.
+                        boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                        drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                    }
+                }
+
+            } else {
+                // Reset all walks -- no where to go from here
+                for(int i=0; i < numWalks; i++) {
+                    int walk = walks[i]; 
+                    int nextHop  = (int)( Math.random() * N );
+                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                    ;//drunkardContext.resetWalk(walks[i], false);
+                }
             }
         }
     }
