@@ -50,6 +50,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         this.N = N;
         this.R = R;
         this.L = L;
+        this.s = s;
 
         // /////////////////////////
         // (new File("drunkardmob_utilization.csv")).delete();
