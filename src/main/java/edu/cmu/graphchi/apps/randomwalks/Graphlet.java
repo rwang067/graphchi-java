@@ -34,9 +34,10 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
     private int N;
     private int R;
     private int L;
+    private int s;
     private int numTriangle;
 
-    public Graphlet(String companionUrl, String baseFilename, int nShards, int N, int R, int L) throws Exception{
+    public Graphlet(String companionUrl, String baseFilename, int nShards, int N, int R, int L, int s) throws Exception{
         this.baseFilename = baseFilename;
         this.drunkardMobEngine = new DrunkardMobEngine<EmptyType, EmptyType>(baseFilename, nShards,
                 new IntDrunkardFactory());
@@ -44,6 +45,7 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
         this.N = N;
         this.R = R;
         this.L = L;
+        this.s = s;
         this.numTriangle = 0;
     }
 
@@ -54,7 +56,8 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
 
         //start walks
         logger.info("configureRandomWalks, R = " + R);
-        drunkardJob.configureRandomWalks(R, 1);
+        // drunkardJob.configureRandomWalks(R, 1);
+        drunkardJob.configureSourceRangeInternalIds(s, 1, R);
         drunkardMobEngine.run(numIters);
     }
 
@@ -71,29 +74,42 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
         int numWalks = walks.length;
         int numOutEdges = vertex.numOutEdges();
 
-
-        for(int i=0; i < numWalks; i++) {
-            int walk = walks[i];
-            
-            int curSource = ((walk & 0xffffff00) >> 8) & 0xffffff;
-            int nextHop;
-
-            // Reset?
-            if (numOutEdges == 0 || randomGenerator.nextDouble() < RESET_PROBABILITY) {
-                nextHop  = (int)( Math.random() * N );
-                boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
-                drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
-                ;//drunkardContext.resetWalk(walk, false);
-            } else {
-                nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
-
-                // Optimization to tell the manager that walks that have just been started
-                // need not to be tracked.
-                boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
-                drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+        if(vertex.getId() == s && drunkardContext.getIteration()==0){
+            if(numWalks == R){ 
+                for(int i = 0; i < N; i++){
+                    int walk = walks[i];
+                    int nextHop  = (int)( Math.random() * N );
+                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                }
+            }else{
+                logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
             }
+        }else{
 
-            if(drunkardContext.getIteration() == L-1 && nextHop == curSource) numTriangle++;
+            for(int i=0; i < numWalks; i++) {
+                int walk = walks[i];
+                
+                int curSource = ((walk & 0xffffff00) >> 8) & 0xffffff;
+                int nextHop;
+
+                // Reset?
+                if (numOutEdges == 0 || randomGenerator.nextDouble() < RESET_PROBABILITY) {
+                    nextHop  = (int)( Math.random() * N );
+                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                    ;//drunkardContext.resetWalk(walk, false);
+                } else {
+                    nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
+
+                    // Optimization to tell the manager that walks that have just been started
+                    // need not to be tracked.
+                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                }
+
+                if(drunkardContext.getIteration() == L-1 && nextHop == curSource) numTriangle++;
+            }
         }
     }
 
@@ -134,6 +150,7 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
         cmdLineOptions.addOption("N", "nvertices", true, "id of the first source vertex (internal id)");
         cmdLineOptions.addOption("R", "nsources", true, "number of sources");
         cmdLineOptions.addOption("L", "niters", true, "number of iterations");
+        cmdLineOptions.addOption("s", "source", true, "fake source");
         cmdLineOptions.addOption("u", "companion", true, "RMI url to the DrunkardCompanion or 'local' (default)");
 
         try {
@@ -189,9 +206,10 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
             int N = Integer.parseInt(cmdLine.getOptionValue("nvertices"));
             int R = Integer.parseInt(cmdLine.getOptionValue("nsources"));
             int L = Integer.parseInt(cmdLine.getOptionValue("niters"));
+            int s = Integer.parseInt(cmdLine.getOptionValue("source"));
             String companionUrl = cmdLine.hasOption("companion") ? cmdLine.getOptionValue("companion") : "local";
 
-            Graphlet gl = new Graphlet(companionUrl, baseFilename, nShards, N, R, L);
+            Graphlet gl = new Graphlet(companionUrl, baseFilename, nShards, N, R, L, s);
             gl.execute(L);
             logger.info("Triangle Ratio = " + gl.TriangleRatio());
             System.exit(0);
@@ -199,7 +217,7 @@ public class Graphlet implements WalkUpdateFunction<EmptyType, EmptyType> {
             err.printStackTrace();
             // automatically generate the help statement
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("Raw Random Walks", cmdLineOptions);
+            formatter.printHelp("Graphlet", cmdLineOptions);
         }
     }
 }

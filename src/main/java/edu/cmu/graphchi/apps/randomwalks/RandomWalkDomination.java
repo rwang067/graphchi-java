@@ -116,7 +116,7 @@ public class RandomWalkDomination implements WalkUpdateFunction<EmptyType, Empty
         int numOutEdges = vertex.numOutEdges();
         int numInEdges = vertex.numInEdges();
 
-        if(vertex.getId() == 0 && drunkardContext.getIteration()==0){
+        if(vertex.getId() == s && drunkardContext.getIteration()==0){
             if(numWalks == N){ 
                 for(int i = 0; i < N; i++){
                     int walk = walks[i];

@@ -95,40 +95,54 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         int numWalks = walks.length;
         int numOutEdges = vertex.numOutEdges();
 
-        // logger.info("processWalksAtVertex : " + vertex.getId());
-        // Advance each walk to a random out-edge (if any)
-        if (numOutEdges > 0) {
-            
-            //***********Rui************
-            // used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
-
-            for(int i=0; i < numWalks; i++) {
-                int walk = walks[i];
-
-                // Reset?
-                if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
+        if(vertex.getId() == s && drunkardContext.getIteration()==0){
+            if(numWalks == R){ 
+                for(int i = 0; i < N; i++){
+                    int walk = walks[i];
                     int nextHop  = (int)( Math.random() * N );
                     boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
                     drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
-                    ;//drunkardContext.resetWalk(walk, false);
-                } else {
-                    int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
+                }
+            }else{
+                logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
+            }
+        }else{
 
-                    // Optimization to tell the manager that walks that have just been started
-                    // need not to be tracked.
+            // logger.info("processWalksAtVertex : " + vertex.getId());
+            // Advance each walk to a random out-edge (if any)
+            if (numOutEdges > 0) {
+                
+                //***********Rui************
+                // used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
+
+                for(int i=0; i < numWalks; i++) {
+                    int walk = walks[i];
+
+                    // Reset?
+                    if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
+                        int nextHop  = (int)( Math.random() * N );
+                        boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                        drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                        ;//drunkardContext.resetWalk(walk, false);
+                    } else {
+                        int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
+
+                        // Optimization to tell the manager that walks that have just been started
+                        // need not to be tracked.
+                        boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+                        drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                    }
+                }
+
+            } else {
+                // Reset all walks -- no where to go from here
+                for(int i=0; i < numWalks; i++) {
+                    int walk = walks[i];
+                    int nextHop  = (int)( Math.random() * N );
                     boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
                     drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+                    ;//drunkardContext.resetWalk(walks[i], false);
                 }
-            }
-
-        } else {
-            // Reset all walks -- no where to go from here
-            for(int i=0; i < numWalks; i++) {
-                int walk = walks[i];
-                int nextHop  = (int)( Math.random() * N );
-                boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
-                drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
-                ;//drunkardContext.resetWalk(walks[i], false);
             }
         }
     }
