@@ -1,0 +1,151 @@
+2018.12.26 count the performance of Drunkardmob
+DataSet = Friendster
+numsources = 1000, walkspersource = 2000, firstsource = 12
+nsources =  1
+Engine finished in: 	1151.984	 secs.
+Engine finished in: 	1062.224	 secs.
+Engine finished in: 	1082.832	 secs.
+nsources =  10
+Engine finished in: 	1180.662	 secs.
+Engine finished in: 	1190.59	 secs.
+Engine finished in: 	1191.134	 secs.
+Engine finished in: 	1189.045	 secs.
+Engine finished in: 	1189.9560000000001	 secs.
+nsources =  100
+Engine finished in: 	1211.1970000000001	 secs.
+Engine finished in: 	1213.852	 secs.
+Engine finished in: 	1240.799	 secs.
+nsources =  1000
+Engine finished in: 	1249.577	 secs.
+Engine finished in: 	1250.0810000000001	 secs.
+Engine finished in: 	1246.458	 secs.
+nsources =  10000
+Engine finished in: 	1252.479	 secs.
+Engine finished in: 	1251.269	 secs.
+Engine finished in: 	1257.272	 secs.
+
+2019.1.4 count the performance of Drunkardmob
+app = Drunkardmob-MSPPR, dataset = Twitter
+walkspersource = 2000, firstsource = 13
+nsources =  1
+Engine finished in: 	743.533	 secs.
+Engine finished in: 	742.903	 secs.
+Engine finished in: 	740.696	 secs.
+nsources =  10
+Engine finished in: 	751.923	 secs.
+Engine finished in: 	757.519	 secs.
+Engine finished in: 	757.8290000000001	 secs.
+nsources =  100
+Engine finished in: 	755.096	 secs.
+Engine finished in: 	758.027	 secs.
+Engine finished in: 	758.788	 secs.
+nsources =  1000
+Engine finished in: 	762.42	 secs.
+Engine finished in: 	771.731	 secs.
+nsources =  10000
+
+2019.1.5 count the performance of Drunkardmob in Yahoo on ccc
+/////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
+Engine finished in: 	17.71	 secs.
+Engine finished in: 	165.431	 secs.
+Engine finished in: 	280.462	 secs. 100 sources Twitter
+Engine finished in: 	24.476	 secs.
+Engine finished in: 	31.111	 secs.
+Engine finished in: 	30.869	 secs.
+Engine finished in: 	34.743	 secs.
+Engine finished in: 	28.558	 secs.
+Engine finished in: 	274.868	 secs.
+Engine finished in: 	0.231	 secs.
+Engine finished in: 	0.212	 secs.
+Engine finished in: 	0.226	 secs.
+Engine finished in: 	0.277	 secs.
+Engine finished in: 	0.231	 secs.
+Engine finished in: 	1.3980000000000001	 secs.
+Engine finished in: 	0.848	 secs.
+Engine finished in: 	31.68	 secs.
+Engine finished in: 	0.247	 secs.
+Engine finished in: 	30.929000000000002	 secs.
+Engine finished in: 	27.776	 secs.
+Engine finished in: 	36.325	 secs.
+Engine finished in: 	32.369	 secs.
+Engine finished in: 	269.972	 secs.
+Engine finished in: 	11.714	 secs.
+Engine finished in: 	14.512	 secs.
+Engine finished in: 	17.748	 secs.
+Engine finished in: 	22.041	 secs.
+Engine finished in: 	21.677	 secs.
+Engine finished in: 	20.825	 secs.
+Engine finished in: 	20.114	 secs.
+Engine finished in: 	244.933	 secs.
+Engine finished in: 	19.517	 secs.
+=======
+2019.1.5 count the performance of Drunkardmob in Yahoo on ccc
+app = Drunkardmob-MSPPR, dataset = Yahoo
+walkspersource = 2000, firstsource = 9
+nsources =  1
+Engine finished in: 	1649.044	 secs.
+Engine finished in: 	1655.5520000000001	 secs.
+Engine finished in: 	1654.832	 secs.
+nsources =  10
+Engine finished in: 	1663.233	 secs.
+Engine finished in: 	1645.548	 secs.
+Engine finished in: 	1631.9850000000001	 secs.
+nsources =  100
+Engine finished in: 	1769.269	 secs.
+Engine finished in: 	1732.4	 secs.
+Engine finished in: 	1712.075	 secs.
+nsources =  1000
+Engine finished in: 	2311.401	 secs.
+Engine finished in: 	2245.542	 secs.
+Engine finished in: 	2222.168	 secs.
+nsources =  10000
+Engine finished in: 	2898.027	 secs.
+Engine finished in: 	2835.185	 secs.
+Engine finished in: 	2860.574	 secs.
+nsources =  100000
+Engine finished in: 	3414.302	 secs.
+Engine finished in: 	3356.607	 secs.
+Engine finished in: 	3454.755	 secs.
+nsources =  1000000
+>>>>>>> c53be3eeef72d78ca9d846f134add184ff17c7a5
+Engine finished in: 	5.813	 secs.
+Engine finished in: 	2.517	 secs.
+Engine finished in: 	16.957	 secs.
+Engine finished in: 	313.115	 secs.
+Engine finished in: 	300.5	 secs.
+Engine finished in: 	1.744	 secs.
+Engine finished in: 	1.686	 secs.
+Engine finished in: 	26.301000000000002	 secs.
+Engine finished in: 	0.034	 secs.
+Engine finished in: 	0.04	 secs.
+Engine finished in: 	0.038	 secs.
+Engine finished in: 	0.037	 secs.
+Engine finished in: 	6.339	 secs.
+Engine finished in: 	5.314	 secs.
+Engine finished in: 	1.2590000000000001	 secs.
+Engine finished in: 	1.222	 secs.
+Engine finished in: 	0.4	 secs.
+Engine finished in: 	0.579	 secs.
+Engine finished in: 	0.358	 secs.
+Engine finished in: 	1.338	 secs.
+Engine finished in: 	2.323	 secs.
+Engine finished in: 	6.136	 secs.
+Engine finished in: 	5.377	 secs.
+Engine finished in: 	1.991	 secs.
+Engine finished in: 	2.374	 secs.
+Engine finished in: 	2.816	 secs.
+Engine finished in: 	4.162	 secs.
+Engine finished in: 	3.517	 secs.
+Engine finished in: 	2.5540000000000003	 secs.
+Engine finished in: 	3.737	 secs.
+Engine finished in: 	2.882	 secs.
+Engine finished in: 	2.759	 secs.
+Engine finished in: 	9.23	 secs.
+Engine finished in: 	4.19	 secs.
+Engine finished in: 	7.305	 secs.
+Engine finished in: 	1.738	 secs.
+Engine finished in: 	0.254	 secs.
+Engine finished in: 	6.984	 secs.
+Engine finished in: 	0.146	 secs.
+Engine finished in: 	7.348	 secs.

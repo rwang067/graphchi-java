@@ -1,0 +1,41 @@
+2019.7.10 
+random walks applications performance comparison (clear pagecache each time) in 64GB R730, dataset = Twitter
+Turn on Page Cache, clear pagecache each time, nshards = 5
+App = Graphlet
+Engine finished in: 	34.308	 secs.
+Engine finished in: 	34.537	 secs.
+Engine finished in: 	33.592	 secs.
+Engine finished in: 	34.177	 secs.
+Engine finished in: 	34.594	 secs.
+App = RandomWalkDomination
+Engine finished in: 	294.97	 secs.
+Engine finished in: 	299.69100000000003	 secs.
+Engine finished in: 	300.707	 secs.
+Engine finished in: 	304.291	 secs.
+Engine finished in: 	318.728	 secs.
+2019.7.10
+random walks applications performance comparison (clear pagecache each time) in 64GB R730, dataset = Friendster
+Turn on Page Cache, clear pagecache each time, nshards = 10
+App = Graphlet
+Engine finished in: 	40.966	 secs.
+Engine finished in: 	40.187	 secs.
+Engine finished in: 	41.562	 secs.
+Engine finished in: 	40.300000000000004	 secs.
+Engine finished in: 	40.922000000000004	 secs.
+App = RandomWalkDomination
+Engine finished in: 	552.516	 secs.
+Engine finished in: 	572.791	 secs.
+Engine finished in: 	463.779	 secs.
+Engine finished in: 	521.298	 secs.
+Engine finished in: 	461.873	 secs.
+2019.7.7 
+random walks applications performance comparison (clear pagecache each time) in 64GB R730, dataset = Yahoo
+Turn on Page Cache, clear pagecache each time, nshards = 25
+App = Graphlet
+Engine finished in: 	485.196	 secs.
+Engine finished in: 	456.598	 secs.
+Engine finished in: 	479.718	 secs.
+Engine finished in: 	469.029	 secs.
+Engine finished in: 	479.877	 secs.
+App = RandomWalkDomination
+Engine finished in: 	6003.617	 secs.
