@@ -221,6 +221,21 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
      */
     public void run(GraphChiProgram<VertexDataType, EdgeDataType> program, int niters) throws IOException {
 
+        //breakdown -- by rui
+        double totalInit = 0;
+        double beforeIter = 0;
+        double beforeInvl = 0;
+        double initVert = 0;
+        double loadGraph = 0;
+        double execUpdate = 0;
+        double writeVertices = 0;
+        double waitIO = 0;
+        double afterIter = 0;
+        double afterInvl = 0;
+        double autoLoadNextTime = 0;
+        long totalStartTime = System.currentTimeMillis();
+
+
         if (!hasSetEdgeDataConverter) {
             throw new IllegalStateException("You need to call setEdataConverter() prior to calling run()!");
         }
@@ -271,8 +286,12 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
 
         chiContext.setNumEdges(numEdges());
 
+        totalInit = (System.currentTimeMillis() - totalStartTime) * 0.001 ;
 
         for(int iter=0; iter < niters; iter++) {
+
+            long iterStartTime = System.currentTimeMillis();
+
             /* Wait for executor have finished all writes */
             while (!blockManager.empty()) {
                 try {
@@ -292,7 +311,12 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                 scheduler.reset();
             }
 
+            beforeIter += (System.currentTimeMillis() - iterStartTime) * 0.001 ;
+
             for(int execInterval=0; execInterval < nShards; ++execInterval) {
+
+                long intervalStartTime = System.currentTimeMillis();
+
                 int intervalSt = intervals.get(execInterval).getFirstVertex();
                 int intervalEn = intervals.get(execInterval).getLastVertex();
 
@@ -318,15 +342,22 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
 
                 subIntervalStart = intervalSt;
 
+                beforeInvl += (System.currentTimeMillis() - intervalStartTime) * 0.001 ;
+
                 while (subIntervalStart <= intervalEn) {
+
+                    
                     int adjMaxWindow = maxWindow;
                     if (Integer.MAX_VALUE - subIntervalStart < maxWindow) adjMaxWindow = Integer.MAX_VALUE - subIntervalStart - 1;
-
+                    
                     if (anyVertexScheduled(subIntervalStart, Math.min(intervalEn, subIntervalStart + adjMaxWindow ))) {
                         ChiVertex<VertexDataType, EdgeDataType>[] vertices = null;
                         int vertexBlockId = -1;
-
+                        
                         if (!autoLoadNext || nextWindow == null) {
+
+                            long initVertStartTime = System.currentTimeMillis();
+
                             try {
                                 subIntervalEnd = determineNextWindow(subIntervalStart, Math.min(intervalEn, subIntervalStart + adjMaxWindow ));
                             } catch (NoEdgesInIntervalException nie) {
@@ -344,10 +375,15 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                             logger.info("Init vertices...");
                             vertexBlockId = initVertices(nvertices, subIntervalStart, vertices);
 
+                            initVert += (System.currentTimeMillis() - initVertStartTime) * 0.001 ;
+
                             logger.info("Loading...");
-                            long t0 = System.currentTimeMillis();
+                            long loadGraphStartTime = System.currentTimeMillis();
                             loadBeforeUpdates(execInterval, vertices, memoryShard, subIntervalStart, subIntervalEnd);
-                            logger.info("Load took: " + (System.currentTimeMillis() - t0) + "ms");
+                            logger.info("Load took: " + (System.currentTimeMillis() - loadGraphStartTime) + "ms");
+
+                            loadGraph += (System.currentTimeMillis() - loadGraphStartTime) * 0.001 ;
+
                         } else {
                             /* This is a mess! */
                             try {
@@ -358,6 +394,9 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                                 memoryShard = next.getMemShard();
                                 _timer.stop();
                                 logger.info("Waiting for future task loading took " + (System.currentTimeMillis() - tf) + " ms");
+                                
+                                waitIO += (System.currentTimeMillis() - tf)* 0.001;
+
                                 if (subIntervalStart != next.getSubInterval().getFirstVertex())
                                     throw new IllegalStateException("Future loaders interval does not match the expected one! " +
                                             subIntervalStart + " != " + next.getSubInterval().getFirstVertex());
@@ -369,6 +408,8 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                                 throw new RuntimeException(err);
                             }
                         }
+
+                        long autoLoadNextStartTime = System.currentTimeMillis();
 
                         if (autoLoadNext) {
                             /* Start a future for loading the next window */
@@ -393,15 +434,22 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                                 loadingExecutor.submit(nextWindow);
 
                         }
+
+                        autoLoadNextTime += (System.currentTimeMillis() - autoLoadNextStartTime) * 0.001 ;
+
                         /* Clear scheduler bits */
                         if (scheduler != null) scheduler.removeTasks(subIntervalStart, subIntervalEnd);
 
                         chiContext.setCurInterval(new VertexInterval(execInterval, subIntervalStart, subIntervalEnd));
                         program.beginSubInterval(chiContext, new VertexInterval(execInterval, subIntervalStart, subIntervalEnd));
 
-                        long t1 = System.currentTimeMillis();
+                        long execUpdateStartTime = System.currentTimeMillis();
                         execUpdates(program, vertices);
-                        logger.info("Update exec: " + (System.currentTimeMillis() - t1) + " ms.");
+                        logger.info("Update exec: " + (System.currentTimeMillis() - execUpdateStartTime) + " ms.");
+
+                        execUpdate += (System.currentTimeMillis() - execUpdateStartTime) * 0.001 ;
+
+                        long writeVerticesStartTime = System.currentTimeMillis();
 
                         // Write vertices (async)
                         final int _firstVertex = subIntervalStart;
@@ -421,6 +469,8 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
 
                         program.endSubInterval(chiContext, new VertexInterval(execInterval, subIntervalStart, subIntervalEnd));
 
+                        writeVertices += (System.currentTimeMillis() - writeVerticesStartTime) * 0.001 ;
+
                     }  else {
                         subIntervalEnd = subIntervalStart + adjMaxWindow;
                         logger.info("Skipped interval - no vertices scheduled. " + subIntervalStart + " -- " + subIntervalEnd);
@@ -428,6 +478,8 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
                         subIntervalStart = subIntervalEnd + 1;
                     }
                 }
+
+                long afterInvlStartTime = System.currentTimeMillis();
 
 
                 /* Commit */
@@ -441,25 +493,44 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
 
                 program.endInterval(chiContext, intervals.get(execInterval));
 
+                afterInvl += (System.currentTimeMillis() - afterInvlStartTime) * 0.001 ;
+
             }
 
+            long afteriterStartTime = System.currentTimeMillis();
+            
+            
             for(SlidingShard shard : slidingShards) {
                 shard.flush();
                 shard.setOffset(0, 0, 0);
             }
             program.endIteration(chiContext);
+
+            afterIter += (System.currentTimeMillis() - afteriterStartTime) * 0.001 ;
         }    // Iterations
 
         parallelExecutor.shutdown();
         loadingExecutor.shutdown();
 
         if (vertexDataHandler != null)
-            vertexDataHandler.close();
-        logger.info("Engine finished in: " + (System.currentTimeMillis() - startTime) * 0.001 + " secs.");
+        vertexDataHandler.close();
         logger.info("Updates: " + nupdates);
+        logger.info("Engine finished in: " + (System.currentTimeMillis() - startTime) * 0.001 + " secs.");
+        logger.info("totalInit =  " + totalInit + " secs.");
+        logger.info("beforeIter =  " + beforeIter + " secs.");
+        logger.info("beforeInvl =  " + beforeInvl + " secs.");
+        logger.info("initVert =  " + initVert + " secs.");
+        logger.info("loadGraph =  " + loadGraph + " secs.");
+        logger.info("execUpdate =  " + execUpdate + " secs.");
+        logger.info("writeVertices =  " + writeVertices + " secs.");
+        logger.info("autoLoadNextTime =  " + autoLoadNextTime + " secs.");
+        logger.info("waitIO =  " + waitIO + " secs.");
+        logger.info("afterInvl =  " + afterInvl + " secs.");
+        logger.info("afterIter =  " + afterIter + " secs.");
         FileWriter writer = new FileWriter("drunkardmob.statistics", true);   
-        writer.write("Engine finished in: " + "\t" + (System.currentTimeMillis() - startTime) * 0.001 + "\t" + " secs." + "\n" );   
+        writer.write((System.currentTimeMillis() - startTime) * 0.001 + "\t" + loadGraph + "\t" + execUpdate + "\t" + writeVertices + "\t" + "\n" );   
         writer.close();   
+
     }
 
     private boolean anyVertexScheduled(int subIntervalStart, int lastVertex) {
