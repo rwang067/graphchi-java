@@ -24,8 +24,8 @@ import java.util.ArrayList;
  */
 public class ChiFilenames {
 
-    public static String graphFilePrefix = "_DrunkardMob/../../../raid0_defghij/DrunkardMob/";
-    // public static String graphFilePrefix = "_DrunkardMob/";
+    // public static String graphFilePrefix = "_DrunkardMob/../../../raid0_defghij/DrunkardMob/";
+    public static String graphFilePrefix = "_DrunkardMob/";
 
     public static String vertexDataSuffix = "";
 
