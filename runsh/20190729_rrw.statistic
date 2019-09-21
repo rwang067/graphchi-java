@@ -1,0 +1,100 @@
+2019.7.16 
+Raw random walks performance comparison (clear pagecache each time) in 64GB R730, dataset = Friendster
+Turn on Page Cache, clear pagecache each time, nshards = 25
+L = 10, vary R
+L = 10, vary R, R =  1000
+Engine finished in: 	951.36	 secs.
+Engine finished in: 	93.787	 secs.
+Engine finished in: 	93.86	 secs.
+Engine finished in: 	93.796	 secs.
+Engine finished in: 	95.868	 secs.
+L = 10, vary R, R =  10000
+Engine finished in: 	96.825	 secs.
+Engine finished in: 	95.777	 secs.
+Engine finished in: 	95.557	 secs.
+Engine finished in: 	97.656	 secs.
+Engine finished in: 	96.23	 secs.
+L = 10, vary R, R =  100000
+Engine finished in: 	101.81700000000001	 secs.
+Engine finished in: 	103.001	 secs.
+Engine finished in: 	101.822	 secs.
+Engine finished in: 	102.771	 secs.
+Engine finished in: 	101.742	 secs.
+L = 10, vary R, R =  1000000
+Engine finished in: 	145.629	 secs.
+Engine finished in: 	137.865	 secs.
+Engine finished in: 	136.066	 secs.
+Engine finished in: 	143.431	 secs.
+Engine finished in: 	143.591	 secs.
+L = 10, vary R, R =  10000000
+Engine finished in: 	351.983	 secs.
+Engine finished in: 	350.58	 secs.
+Engine finished in: 	354.823	 secs.
+Engine finished in: 	388.793	 secs.
+Engine finished in: 	336.766	 secs.
+L = 10, vary R, R =  100000000
+Engine finished in: 	876.005	 secs.
+Engine finished in: 	873.2180000000001	 secs.
+Engine finished in: 	859.842	 secs.
+Engine finished in: 	768.317	 secs.
+Engine finished in: 	783.7760000000001	 secs.
+L = 10, vary R, R =  1000000000
+Engine finished in: 	889.971	 secs.
+Engine finished in: 	955.154	 secs.
+Engine finished in: 	877.895	 secs.
+Engine finished in: 	761.612	 secs.
+Engine finished in: 	889.678	 secs.
+L = 10, vary R, R =  10000000000
+R = 100000, vary L
+R = 100000, vary L, L =  4
+Engine finished in: 	41.434	 secs.
+Engine finished in: 	41.161	 secs.
+Engine finished in: 	41.04	 secs.
+Engine finished in: 	41.143	 secs.
+Engine finished in: 	41.2	 secs.
+R = 100000, vary L, L =  8
+Engine finished in: 	82.328	 secs.
+Engine finished in: 	80.938	 secs.
+Engine finished in: 	81.517	 secs.
+Engine finished in: 	81.548	 secs.
+Engine finished in: 	81.153	 secs.
+R = 100000, vary L, L =  16
+Engine finished in: 	166.16400000000002	 secs.
+Engine finished in: 	163.95000000000002	 secs.
+Engine finished in: 	166.729	 secs.
+Engine finished in: 	163.845	 secs.
+Engine finished in: 	164.978	 secs.
+R = 100000, vary L, L =  32
+Engine finished in: 	330.086	 secs.
+Engine finished in: 	332.206	 secs.
+Engine finished in: 	335.329	 secs.
+Engine finished in: 	328.271	 secs.
+Engine finished in: 	328.05400000000003	 secs.
+R = 100000, vary L, L =  64
+Engine finished in: 	658.754	 secs.
+Engine finished in: 	654.244	 secs.
+Engine finished in: 	660.931	 secs.
+Engine finished in: 	687.205	 secs.
+Engine finished in: 	650.201	 secs.
+R = 100000, vary L, L =  128
+Engine finished in: 	1316.113	 secs.
+Engine finished in: 	1315.724	 secs.
+Engine finished in: 	1320.601	 secs.
+Engine finished in: 	1378.887	 secs.
+Engine finished in: 	1320.9	 secs.
+R = 100000, vary L, L =  256
+Engine finished in: 	2646.9120000000003	 secs.
+Engine finished in: 	2627.132	 secs.
+Engine finished in: 	2671.7670000000003	 secs.
+Engine finished in: 	2642.29	 secs.
+Engine finished in: 	2629.079	 secs.
+R = 100000, vary L, L =  512
+Engine finished in: 	5299.832	 secs.
+Engine finished in: 	5298.599	 secs.
+Engine finished in: 	5249.777	 secs.
+Engine finished in: 	6248.957	 secs.
+Engine finished in: 	5289.586	 secs.
+R = 100000, vary L, L =  1024
+Engine finished in: 	10479.278	 secs.
+R = 100000, vary L, L =  2048
+37.666000000000004	31.81000000000001	1.2259999999999998	0.24100000000000016	
