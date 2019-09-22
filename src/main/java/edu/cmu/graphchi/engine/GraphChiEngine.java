@@ -303,7 +303,7 @@ public class GraphChiEngine <VertexDataType, EdgeDataType> {
             blockManager.reset();
             chiContext.setIteration(iter);
             chiContext.setNumVertices(numVertices());
-            program.beginIteration(chiContext);
+            program.beginIteration(chiContext,intervals);
 
             if (scheduler != null) {
                 if (iter > 0 && !scheduler.hasTasks()) {

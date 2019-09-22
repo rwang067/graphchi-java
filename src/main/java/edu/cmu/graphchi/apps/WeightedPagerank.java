@@ -17,6 +17,7 @@ import edu.cmu.graphchi.util.Toplist;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -62,7 +63,7 @@ public class WeightedPagerank implements GraphChiProgram<Float, FloatPair> {
     /**
      * Callbacks (not needed for Pagerank)
      */
-    public void beginIteration(GraphChiContext ctx) {}
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {}
     public void endIteration(GraphChiContext ctx) {}
     public void beginInterval(GraphChiContext ctx, VertexInterval interval) {}
     public void endInterval(GraphChiContext ctx, VertexInterval interval) {}

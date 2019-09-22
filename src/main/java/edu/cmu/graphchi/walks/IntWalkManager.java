@@ -4,6 +4,8 @@ import com.yammer.metrics.core.TimerContext;
 
 import org.apache.tools.ant.taskdefs.Length;
 
+import edu.cmu.graphchi.*;
+import edu.cmu.graphchi.ChiFilenames;
 import edu.cmu.graphchi.ChiLogger;
 import edu.cmu.graphchi.Scheduler;
 import edu.cmu.graphchi.engine.VertexInterval;
@@ -11,6 +13,7 @@ import edu.cmu.graphchi.engine.VertexInterval;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
+import java.io.IOException;
 
 /**
  * Manager for random walks
@@ -384,6 +387,53 @@ public class IntWalkManager extends WalkManager {
                 }
             }
         }
+        _timer.stop();
+    }
+
+    @Override
+    public void printWalksDistribution(Scheduler scheduler, ArrayList<VertexInterval> intervals) {
+        final TimerContext _timer = schedulePopulate.time();
+        int nShards = intervals.size();
+        long[] walkdis = new long[nShards];
+        for(int i = 0; i < nShards; i++){
+            walkdis[i] = 0;
+            int fromBucket = intervals.get(i).getFirstVertex() / bucketSize;
+            int toBucket = intervals.get(i).getLastVertex() / bucketSize;
+
+            for(int bucketIdx=fromBucket; bucketIdx <= toBucket; bucketIdx++) {
+                int vertexBase = bucketIdx * bucketSize;
+                int[] bucket = walks[bucketIdx];
+
+                if (bucket != null) {
+                    int end = bucket.length;
+                    if(end > bucketSize) end = bucketSize;
+                    for(int j=0; j<bucket.length; j++) {
+                        int off = off(bucket[j]);
+                        boolean bit = trackBit(bucket[j]);
+                        int v = vertexBase + off;
+                        if(v >= intervals.get(i).getFirstVertex() && v <= intervals.get(i).getLastVertex()){
+                            if(bit){
+                                walkdis[i]++;
+                            }
+                        }else{
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+        try{
+            FileWriter writer = new FileWriter("drunkardmob_walkdistribution.csv", true);   
+            for(int i = 0; i < nShards; i++){
+                writer.write(i + "\t" + intervals.get(i).getFirstVertex() + "\t" + intervals.get(i).getLastVertex() + "\t" + walkdis[i] + "\n" ); 
+                walkdis[i] = 0;
+            }  
+            writer.close();
+        } catch(IOException ie) {
+            ie.printStackTrace();
+        }
+        
         _timer.stop();
     }
 }

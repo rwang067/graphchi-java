@@ -18,6 +18,7 @@ import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -176,7 +177,7 @@ public class PigALSMatrixFactorization extends PigGraphChiBase
     }
 
     @Override
-    public void beginIteration(GraphChiContext ctx) {
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
         /* On first iteration, initialize the vertices in memory.
          * Vertices' latent factors are stored in the vertexValueMatrix
          * so that each row contains one latent factor.

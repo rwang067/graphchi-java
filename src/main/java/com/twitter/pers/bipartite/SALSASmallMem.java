@@ -105,7 +105,7 @@ public class SALSASmallMem extends PigGraphChiBase implements GraphChiProgram<Fl
     }
 
     @Override
-    public void beginIteration(GraphChiContext ctx) {
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
     }
 
 

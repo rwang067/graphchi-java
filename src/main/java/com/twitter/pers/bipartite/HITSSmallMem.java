@@ -116,7 +116,7 @@ public class HITSSmallMem extends PigGraphChiBase implements GraphChiProgram<Flo
         }
     }
 
-    public void beginIteration(GraphChiContext ctx) {
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
     }
 
 

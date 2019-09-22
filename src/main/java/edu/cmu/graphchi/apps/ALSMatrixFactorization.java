@@ -13,6 +13,7 @@ import edu.cmu.graphchi.util.HugeDoubleMatrix;
 import org.apache.commons.math.linear.*;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -149,7 +150,7 @@ public class ALSMatrixFactorization implements GraphChiProgram<Integer, Float> {
     }
 
     @Override
-    public void beginIteration(GraphChiContext ctx) {
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
         /* On first iteration, initialize the vertices in memory.
          * Vertices' latent factors are stored in the vertexValueMatrix
          * so that each row contains one latent factor.

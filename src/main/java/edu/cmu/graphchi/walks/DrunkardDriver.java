@@ -99,11 +99,12 @@ public abstract class DrunkardDriver<VertexDataType, EdgeDataType> implements Gr
         // job.getCompanion().setSources(job.getWalkManager().getSources());
     }
 
-    public void beginIteration(GraphChiContext ctx) {
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
         if (ctx.getIteration() == 0) {
             ctx.getScheduler().removeAllTasks();
             job.getWalkManager().populateSchedulerWithSources(ctx.getScheduler());
         }
+        job.getWalkManager().printWalksDistribution(ctx.getScheduler(),intervals);
     }
 
     public void endIteration(GraphChiContext ctx) {}

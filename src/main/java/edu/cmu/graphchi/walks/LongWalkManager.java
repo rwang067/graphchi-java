@@ -381,4 +381,8 @@ public class LongWalkManager extends WalkManager {
         }
         _timer.stop();
     }
+
+    @Override
+    public void printWalksDistribution(Scheduler scheduler, ArrayList<VertexInterval> intervals) {
+    }
 }

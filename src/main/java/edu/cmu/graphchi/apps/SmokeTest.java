@@ -13,6 +13,7 @@ import edu.cmu.graphchi.vertexdata.VertexIdValue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -73,7 +74,7 @@ public class SmokeTest implements GraphChiProgram<Integer, Integer> {
     }
 
 
-    public void beginIteration(GraphChiContext ctx) {}
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {}
 
     public void endIteration(GraphChiContext ctx) {}
 

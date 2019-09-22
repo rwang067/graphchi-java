@@ -153,4 +153,6 @@ public abstract class WalkManager {
     }
 
     public abstract void populateSchedulerForInterval(Scheduler scheduler, VertexInterval interval);
+    
+    public abstract void printWalksDistribution(Scheduler scheduler,ArrayList<VertexInterval> intervals);
 }

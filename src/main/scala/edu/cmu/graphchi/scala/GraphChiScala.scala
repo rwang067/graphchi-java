@@ -4,6 +4,8 @@ import edu.cmu.graphchi._
 import edu.cmu.graphchi.engine._
 import edu.cmu.graphchi.datablocks._
 
+import java.util.ArrayList
+
 class ScalaChiVertex[VertexDataType, EdgeDataType](v : ChiVertex[VertexDataType, EdgeDataType]) 
 {
 
@@ -189,7 +191,7 @@ extends GraphChiProgram[VertexDataType, EdgeDataType] {
 				}
 			}
 
-			override def beginIteration(ctx : GraphChiContext) : Unit = {}
+			override def beginIteration(ctx : GraphChiContext, intervals : ArrayList[VertexInterval]) : Unit = {}
 			override def endIteration(ctx : GraphChiContext) : Unit = {}
 			override def beginInterval(ctx : GraphChiContext, interval : VertexInterval) : Unit = {}
 			override def endInterval(ctx : GraphChiContext, interval : VertexInterval) : Unit = {}
@@ -201,7 +203,7 @@ extends GraphChiProgram[VertexDataType, EdgeDataType] {
 /*
     public void update(ChiVertex<VertexDataType, EdgeDataType> vertex, GraphChiContext context);
 
-    public void beginIteration(GraphChiContext ctx);
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals);
 
     public void endIteration(GraphChiContext ctx);
 

@@ -6,6 +6,7 @@ import edu.cmu.graphchi.engine._
 import edu.cmu.graphchi.datablocks._
 import edu.cmu.graphchi.util._
 import java.util.concurrent.TimeUnit
+import java.util.ArrayList;
 
 class VertexInfo[VT, ET](v : ChiVertex[VT, ET]) {
   def numInEdges() = v.numInEdges()
@@ -168,7 +169,7 @@ class GraphChiSquared[GatherType : ClassManifest](baseFilename : String, numShar
 
   def getVertexMatrix() = vertexMatrix
 
-  override def beginIteration(ctx : GraphChiContext) : Unit = {}
+  override def beginIteration(ctx : GraphChiContext, intervals : ArrayList[VertexInterval]) : Unit = {}
   override def endIteration(ctx : GraphChiContext) : Unit = {}
   override def beginInterval(ctx : GraphChiContext, interval : VertexInterval) : Unit = {}
   override def endInterval(ctx : GraphChiContext, interval : VertexInterval) : Unit = {}

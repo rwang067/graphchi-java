@@ -19,6 +19,7 @@ import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -81,7 +82,7 @@ public class PigWeightedPagerank extends PigGraphChiBase implements GraphChiProg
     /**
      * Callbacks (not needed for Pagerank)
      */
-    public void beginIteration(GraphChiContext ctx) {}
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {}
     public void endIteration(GraphChiContext ctx) {}
     public void beginInterval(GraphChiContext ctx, VertexInterval interval) {}
     public void endInterval(GraphChiContext ctx, VertexInterval interval) {}

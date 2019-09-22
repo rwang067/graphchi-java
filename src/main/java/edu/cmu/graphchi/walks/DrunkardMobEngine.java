@@ -231,10 +231,10 @@ public class DrunkardMobEngine<VertexDataType, EdgeDataType> {
         }
 
         @Override
-        public void beginIteration(GraphChiContext ctx) {
+        public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
             iterationStart = System.currentTimeMillis();
             for(DrunkardDriver driver : drivers) {
-                driver.beginIteration(ctx);
+                driver.beginIteration(ctx, intervals);
             }
         }
 

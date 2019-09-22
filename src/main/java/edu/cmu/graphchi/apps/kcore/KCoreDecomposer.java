@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
@@ -158,7 +159,7 @@ public class KCoreDecomposer implements GraphChiProgram<Integer, Integer> {
     /**
      * Invoked with the start of a new iteration
      */
-    public void beginIteration(GraphChiContext ctx) {
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
         vertexValuesUpdated = 0;
     }
 

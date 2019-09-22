@@ -1,5 +1,7 @@
 package edu.cmu.graphchi;
 
+import java.util.ArrayList;
+
 import edu.cmu.graphchi.engine.VertexInterval;
 
 /**
@@ -35,8 +37,9 @@ public interface GraphChiProgram <VertexDataType, EdgeDataType> {
     /**
      * Called when a new iteration starts
      * @param ctx
+     * @param intervals
      */
-    public void beginIteration(GraphChiContext ctx);
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals);
 
 
     /**

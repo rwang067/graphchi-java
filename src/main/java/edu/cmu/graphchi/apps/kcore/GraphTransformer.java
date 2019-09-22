@@ -66,7 +66,7 @@ public class GraphTransformer implements GraphChiProgram<Integer, Integer> {
         }
     }
 
-    public void beginIteration(GraphChiContext ctx) {}
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {}
 
     public void endIteration(GraphChiContext ctx) {}
 

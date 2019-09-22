@@ -12,6 +12,7 @@ import edu.cmu.graphchi.util.LabelAnalysis;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -77,7 +78,7 @@ public class ConnectedComponents implements GraphChiProgram<Integer, Integer> {
     }
 
 
-    public void beginIteration(GraphChiContext ctx) {}
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {}
 
     public void endIteration(GraphChiContext ctx) {}
 

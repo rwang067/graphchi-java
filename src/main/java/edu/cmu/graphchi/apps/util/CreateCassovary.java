@@ -9,6 +9,7 @@ import edu.cmu.graphchi.preprocessing.FastSharder;
 import edu.cmu.graphchi.preprocessing.VertexProcessor;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -35,7 +36,7 @@ public class CreateCassovary  implements GraphChiProgram<Integer, Integer> {
     }
 
     @Override
-    public void beginIteration(GraphChiContext ctx) {
+    public void beginIteration(GraphChiContext ctx, ArrayList<VertexInterval> intervals) {
     }
 
     @Override
