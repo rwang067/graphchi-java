@@ -99,7 +99,6 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         int numOutEdges = vertex.numOutEdges();
 
         //Randm start walks
-        /** 
         if(vertex.getId() == s && drunkardContext.getIteration()==0){
             logger.info("Random start " + numWalks + " walks, N = " + N);
             if(numWalks == R){ 
@@ -111,9 +110,9 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
                 }
             }else{
                 logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
-            }
-            */
+            }           
         //Single-source start walks
+        /** 
         if(vertex.getId() == s && drunkardContext.getIteration()==0){
             logger.info("Single-source start " + numWalks + " walks, from source" + s + ", N = " + N);
             if(numWalks == R){ 
@@ -126,6 +125,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
             }else{
                 logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
             }
+        */
         }else{
 
             // logger.info("processWalksAtVertex : " + vertex.getId());
