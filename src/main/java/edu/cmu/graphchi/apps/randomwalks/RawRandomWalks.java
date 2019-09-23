@@ -42,6 +42,9 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
     int nThreads;
     private int[] numedges;
     private int[] used_edges;
+    //20190923 by Rui -- used for counting stranded walks
+    private int[] intervals;
+    private int[] strandedwalks;
 
     public RawRandomWalks(String companionUrl, String baseFilename, int nShards, int N, int R, int L, int s) throws Exception{
         this.baseFilename = baseFilename;
@@ -54,7 +57,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         this.L = L;
         this.s = s;
 
-        // // /////////////////////////
+        // 20190619 by Rui -- used for counting IO utilizations
         (new File("drunkardmob_utilization.csv")).delete();
         (new File("drunkardmob_walkdistribution.csv")).delete();
 
@@ -65,12 +68,30 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
             line = rd.readLine();
             numedges[i] = Integer.parseInt(line);
         }
+        rd.close();
         
         nThreads = Runtime.getRuntime().availableProcessors();
         used_edges = new int[nThreads];
         for(int i=0; i<nThreads; i++){
             used_edges[i] = 0;
         }
+
+        //20190923 by Rui -- used for counting stranded walks
+        intervals = new int[nShards+1];
+        BufferedReader rd2 = new BufferedReader(new FileReader(new File(ChiFilenames.getFilenameIntervals(baseFilename, nShards))));
+        String line2;
+        intervals[0] = 0;
+        for(int i = 1; i <= nShards; i++) {
+            line2 = rd2.readLine();
+            intervals[i] = Integer.parseInt(line2);
+        }
+        rd2.close();
+
+        strandedwalks = new int[nThreads];
+        for(int i=0; i<nThreads; i++){
+            strandedwalks[i] = 0;
+        }
+
     }
 
     private void execute(int numIters) throws Exception {
@@ -98,21 +119,20 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         int numWalks = walks.length;
         int numOutEdges = vertex.numOutEdges();
 
-        //Randm start walks
-        if(vertex.getId() == s && drunkardContext.getIteration()==0){
-            logger.info("Random start " + numWalks + " walks, N = " + N);
-            if(numWalks == R){ 
-                for(int i = 0; i < N; i++){
-                    int walk = walks[i];
-                    int nextHop  = (int)( Math.random() * N );
-                    boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
-                    drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
-                }
-            }else{
-                logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
-            }           
+        // //Randm start walks
+        // if(vertex.getId() == s && drunkardContext.getIteration()==0){
+        //     logger.info("Random start " + numWalks + " walks, N = " + N);
+        //     if(numWalks == R){ 
+        //         for(int i = 0; i < N; i++){
+        //             int walk = walks[i];
+        //             int nextHop  = (int)( Math.random() * N );
+        //             boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
+        //             drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
+        //         }
+        //     }else{
+        //         logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
+        //     }           
         //Single-source start walks
-        /** 
         if(vertex.getId() == s && drunkardContext.getIteration()==0){
             logger.info("Single-source start " + numWalks + " walks, from source" + s + ", N = " + N);
             if(numWalks == R){ 
@@ -125,15 +145,24 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
             }else{
                 logger.info("Wrong numWalks = " + numWalks + ", N = " + N);
             }
-        */
         }else{
 
             // logger.info("processWalksAtVertex : " + vertex.getId());
             // Advance each walk to a random out-edge (if any)
+
+            //20190923 by Rui -- used for counting stranded walks
+            int blockid = 0;
+            for(int i = 0; i < intervals.length-1; i++){
+                if(vertex.getId() < intervals[i+1]){
+                    blockid = i;
+                }
+            }
+            int threadid = (int)(Thread.currentThread().getId())%nThreads;
+
             if (numOutEdges > 0) {
                 
                 //***********Rui************
-                used_edges[(int)(Thread.currentThread().getId())%nThreads] += numWalks;
+                used_edges[threadid] += numWalks;
 
                 for(int i=0; i < numWalks; i++) {
                     int walk = walks[i];
@@ -141,11 +170,17 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
                     // Reset?
                     if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
                         int nextHop  = (int)( Math.random() * N );
+                        if(nextHop >= intervals[blockid] && nextHop < intervals[blockid+1]){
+                            strandedwalks[threadid] ++;
+                        }
                         boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
                         drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
                         ;//drunkardContext.resetWalk(walk, false);
                     } else {
                         int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
+                        if(nextHop >= intervals[blockid] && nextHop < intervals[blockid+1]){
+                            strandedwalks[threadid] ++;
+                        }
 
                         // Optimization to tell the manager that walks that have just been started
                         // need not to be tracked.
@@ -159,6 +194,9 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
                 for(int i=0; i < numWalks; i++) {
                     int walk = walks[i];
                     int nextHop  = (int)( Math.random() * N );
+                    if(nextHop >= intervals[blockid] && nextHop < intervals[blockid+1]){
+                        strandedwalks[threadid] ++;
+                    }
                     boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
                     drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
                     ;//drunkardContext.resetWalk(walks[i], false);
@@ -191,11 +229,12 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         logger.info("compUtilization...");
         for(int i = 1; i < nThreads; i++){
             used_edges[0] += used_edges[i];
+            strandedwalks[0] += strandedwalks[i];
         }
         float utilization = (float)used_edges[0] / (float)numedges[execInterval];
         try{
             FileWriter writer = new FileWriter("drunkardmob_utilization.csv", true);   
-            writer.write(execInterval + "\t" + numedges[execInterval] + "\t" + used_edges[0] + "\t" + utilization + "\n" );   
+            writer.write(execInterval + "\t" + numedges[execInterval] + "\t" + used_edges[0] + "\t" + utilization + "\t" + strandedwalks[0] + "\n" );   
             writer.close();
         } catch(IOException ie) {
             ie.printStackTrace();
@@ -204,6 +243,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
 
         for(int i=0; i<nThreads; i++){
             used_edges[i] = 0;
+            strandedwalks[i] = 0;
         }
     }
 
