@@ -118,6 +118,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         IntDrunkardContext drunkardContext = (IntDrunkardContext) drunkardContext_;
         int numWalks = walks.length;
         int numOutEdges = vertex.numOutEdges();
+        int numInEdges = vertex.numInEdges();
 
         // //Randm start walks
         // if(vertex.getId() == s && drunkardContext.getIteration()==0){
@@ -134,9 +135,9 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
         //     }           
         //Single-source start walks
         if(vertex.getId() == s && drunkardContext.getIteration()==0){
-            logger.info("Single-source start " + numWalks + " walks, from source" + s + ", N = " + N);
+            logger.info("Single-source start " + numWalks + " walks, from source " + s + ", numOutEdges = " + numOutEdges + ", numInEdges = " + numInEdges + ", N = " + N);
             if(numWalks == R){ 
-                for(int i = 0; i < N; i++){
+                for(int i = 0; i < R; i++){
                     int walk = walks[i];
                     int nextHop  = s;//(int)( Math.random() * N );
                     boolean shouldTrack = !drunkardContext.isWalkStartedFromVertex(walk);
@@ -168,8 +169,10 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
                     int walk = walks[i];
 
                     // Reset?
-                    if (randomGenerator.nextDouble() < RESET_PROBABILITY) {
-                        int nextHop  = (int)( Math.random() * N );
+                    double randl = randomGenerator.nextDouble();
+                    if (randl < RESET_PROBABILITY) {
+                    // logger.info("randomGenerator.nextDouble() < RESET_PROBABILITY !!!, randl = " + randl);
+                    int nextHop  = s;//(int)( Math.random() * N );
                         if(nextHop >= intervals[blockid] && nextHop < intervals[blockid+1]){
                             strandedwalks[threadid] ++;
                         }
@@ -177,6 +180,7 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
                         drunkardContext.forwardWalkTo(walk, nextHop, shouldTrack);
                         ;//drunkardContext.resetWalk(walk, false);
                     } else {
+                        // logger.info("walk to neighbor.");
                         int nextHop  = vertex.getOutEdgeId(randomGenerator.nextInt(numOutEdges));
                         if(nextHop >= intervals[blockid] && nextHop < intervals[blockid+1]){
                             strandedwalks[threadid] ++;
@@ -191,9 +195,10 @@ public class RawRandomWalks implements WalkUpdateFunction<EmptyType, EmptyType> 
 
             } else {
                 // Reset all walks -- no where to go from here
+                // logger.info("veritexid = " + vertex.getId() + ", numOutEdges = " + numOutEdges);
                 for(int i=0; i < numWalks; i++) {
                     int walk = walks[i];
-                    int nextHop  = (int)( Math.random() * N );
+                    int nextHop  = s;//(int)( Math.random() * N );
                     if(nextHop >= intervals[blockid] && nextHop < intervals[blockid+1]){
                         strandedwalks[threadid] ++;
                     }

@@ -107,6 +107,10 @@ public class IntWalkManager extends WalkManager {
             if (idx == walks[bucket].length) {
                 int newlength = walks[bucket].length * 3 / 2;
                 if(walks[bucket].length == 1) newlength = 32; //Rui 2019.7.1
+                if(newlength<0){
+                  logger.info("Wong newlength: " + newlength);
+                  newlength = Integer.MAX_VALUE-10;
+                }   
                 int[] newBucket = new int[newlength];
                 System.arraycopy(walks[bucket], 0, newBucket, 0, walks[bucket].length);
                 walks[bucket] = newBucket;
